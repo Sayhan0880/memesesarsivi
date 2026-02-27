@@ -1,0 +1,30 @@
+/* Sýralama Butonlarý Grubu */
+.sort-container {
+    display: none; /* JS ile sadece belirli kategorilerde açýlacak */
+    gap: 8px;
+    align-items: center;
+}
+
+.sort-btn {
+    background: rgba(22, 33, 62, 0.8); /* Panel rengine yakýn */
+    border: 1px solid var(--altin);
+    color: var(--altin);
+    padding: 5px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    transition: 0.3s;
+    text-transform: uppercase;
+}
+
+.sort-btn:hover {
+    background: var(--altin);
+    color: var(--ana-renk);
+}
+
+.sort-btn.active {
+    background: var(--altin);
+    color: black;
+    box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+}

@@ -1,0 +1,2067 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    
+    <title>Meme Ses Arşivi</title>
+    <meta name="description" content="Meme Ses Arşivi - Aradığınız eğlence burada!">
+    <meta name="keywords" content="meme, ses arşivi, komik sesler, anime sesleri, oyun sesleri">
+    <meta name="theme-color" content="#0f172a">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="icon.png">
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script> <style>
+/* SCROLLBAR TASARIMI - HIZLANDIRILMIŞ */
+* { 
+    scrollbar-width: thin; 
+    scrollbar-color: rgba(56, 189, 248, 0.3) transparent; 
+}
+
+::-webkit-scrollbar { 
+    width: 6px; 
+}
+
+::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+
+::-webkit-scrollbar-thumb { 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 20px; 
+    transition: background 0.3s; 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+    background: rgba(56, 189, 248, 0.4); 
+}
+
+body { 
+    margin: 0; 
+    font-family: 'Inter', sans-serif; 
+    background: #0f172a; 
+    color: white; 
+    display: flex; 
+    min-height: 100vh; 
+    scroll-behavior: smooth;
+}
+
+        /* SIDEBAR */
+        .sidebar { 
+            width: 230px; background: rgba(15, 23, 42, 0.95); padding: 20px; border-right: 1px solid rgba(56, 189, 248, 0.2); 
+            backdrop-filter: blur(10px); display: flex; flex-direction: column; height: 100vh; position: fixed; top: 0; left: 0; box-sizing: border-box; z-index: 100;
+        }
+
+/* KATEGORİ BUTONLARI */
+.cat-btn { 
+    display: block; 
+    width: 100%; 
+    padding: 12px; 
+    margin: 8px 0; 
+    background: rgba(51, 65, 85, 0.4); 
+    color: white; 
+    border: 1px solid transparent; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    text-align: left;
+    transition: background 0.2s, border-color 0.2s, transform 0.1s; 
+}
+
+.cat-btn:hover { 
+    border-color: #38bdf8; 
+    background: rgba(56, 189, 248, 0.2); 
+    transform: translateX(5px);
+}
+
+.cat-btn:active {
+    transform: scale(0.98);
+}
+        
+        .trend-btn { background: linear-gradient(45deg, #fbbf24, #ef4444); border: none; color: #0f172a; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
+        .random-btn { background: linear-gradient(45deg, #e94560, #38bdf8); margin-bottom: 15px; border: none; }
+        .game-btn { background: linear-gradient(45deg, #8b5cf6, #ff00ff); border: none; margin-bottom: 15px; animation: pulse 2s infinite; }
+
+        .fav-menu-btn { 
+            color: #fbbf24; border: 2px solid #fbbf24; background: rgba(251, 191, 36, 0.05);
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between;
+        }
+        .fav-menu-btn:hover { background: #fbbf24; color: #0f172a; box-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        /* MAIN AREA */
+        .main { flex: 1; padding: 25px; margin-left: 230px; padding-bottom: 80px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+
+        /* TEMA BUTONLARI */
+        .t-btn { width: 100%; border: none; padding: 8px; margin: 2px 0; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: left; transition: 0.2s; color: white; }
+        .t-btn:hover { filter: brightness(1.2); transform: translateX(3px); }
+
+        /* BAŞARIM */
+        .achievement {
+            position: fixed; top: 20px; right: -400px; background: #1e293b; border-left: 5px solid #fbbf24;
+            padding: 15px 25px; border-radius: 10px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000;
+        }
+        .achievement.show { right: 20px; }
+
+        /* CARD */
+        .card { 
+            background: rgba(30, 41, 59, 0.8); padding: 20px; border-radius: 15px; text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.05); transition: 0.2s; position: relative; overflow: hidden;
+        }
+        .card:hover { border-color: #38bdf8; transform: translateY(-3px); background: rgba(30, 41, 59, 1); }
+
+        .medal-css {
+            position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; color: #000;
+        }
+        .gold { background: linear-gradient(135deg, #ffd700, #b8860b); }
+        .silver { background: linear-gradient(135deg, #c0c0c0, #708090); }
+        .bronze { background: linear-gradient(135deg, #cd7f32, #8b4513); }
+
+        .play-count { font-size: 11px; color: #94a3b8; margin-bottom: 10px; display: block; }
+        .play-btn { background: #38bdf8; border: none; padding: 14px; width: 100%; border-radius: 10px; cursor: pointer; font-weight: 800; color: #0f172a; }
+        
+        .actions { display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 12px; padding-top: 12px; }
+        .action-btn { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 18px; transition: 0.2s; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+        .action-btn span { font-size: 10px; font-weight: 600; margin-top: 4px; }
+        .fav-active { color: #fbbf24 !important; }
+
+        /* OYUN */
+        .quiz-container { max-width: 500px; margin: 0 auto; background: #1e293b; padding: 30px; border-radius: 30px; border: 5px dashed #ff00ff; text-align: center; }
+        .option-btn { width: 100%; padding: 15px; margin: 10px 0; border-radius: 50px; border: 2px solid #38bdf8; background: transparent; color: white; cursor: pointer; font-weight: 600; font-family: 'Inter', sans-serif; }
+        .option-btn:hover { background: #38bdf8; color: #000; }
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+
+        .request-area { margin-top: auto; padding: 15px; background: rgba(233, 69, 96, 0.1); border-radius: 10px; }
+        .request-input { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #334155; background: #0f172a; color: white; margin-bottom: 10px; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        .send-btn { width: 100%; background: #e94560; border: none; padding: 10px; border-radius: 5px; color: white; font-weight: 800; cursor: pointer; transition: 0.3s; font-family: 'Inter', sans-serif; }
+        .signature { position: fixed; bottom: 15px; right: 20px; font-size: 14px; color: rgba(255,255,255,0.2); }
+
+        /* FOOTER */
+        .site-footer {
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
+        .copyright-text { color: #94a3b8; font-size: 13px; margin-bottom: 10px; }
+        .copyright-btn { 
+            background: none; border: 1px solid #e94560; color: #e94560; 
+            padding: 5px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; 
+            font-weight: bold; transition: 0.3s; 
+        }
+        .copyright-btn:hover { background: #e94560; color: white; }
+
+        /* AUTH MODAL & INPUTS (YENİ) */
+        .auth-box {
+            background: #1e293b; width: 90%; max-width: 380px; border-radius: 20px; 
+            border: 2px solid #38bdf8; padding: 25px; position: relative;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.1);
+        }
+        .auth-input-group { margin: 15px 0; text-align: left; }
+        .auth-error-text { color: #e94560; font-size: 11px; margin-top: 5px; display: none; }
+
+/* --- MOBİL İÇİN KESİN ÇÖZÜM VE YATAY DÖNMEYİ ENGELLEME --- */
+@media (max-width: 600px) {
+    /* 1. Yatay kaymayı VE ekran dönmesini kesin engelle */
+    body, html {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background-color: #0f172a !important;
+        
+        /* EKRAN DÖNMESİNİ ENGELLEYEN KOD */
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow-y: auto; /* Dikey kaydırma kalsın */
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 2. Sidebar'ı üste sabitle */
+    .sidebar {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        border-right: none !important;
+        padding: 5px !important;
+        display: flex !important;
+        flex-direction: column !important; /* ALT ALTA */
+        align-items: center; /* ORTALA */
+        gap: 6px !important;
+        order: 1; 
+        background-color: #0f172a;
+    }
+
+    /* KATEGORİLERİ KUTU YAP VE ORTALA */
+    .cat-btn {
+        width: 90% !important; /* Ekranı kaplasın */
+        padding: 12px 5px !important;
+        font-size: 14px !important;
+        text-align: center;
+        background-color: #1e293b !important;
+        border: 1px solid #38bdf8 !important;
+        border-radius: 8px !important;
+        color: white !important;
+        font-weight: bold;
+        box-sizing: border-box;
+        margin: 0 auto; /* ORTALAMA */
+        display: block;
+    }
+    
+    #logo {
+        width: 100%;
+        font-size: 24px !important;
+        margin: 5px 0 !important;
+        color: #38bdf8;
+        text-align: center;
+    }
+
+    /* 3. Main alanı altta başlasın */
+    .main {
+        margin-left: 0 !important;
+        padding: 10px !important;
+        order: 2;
+        width: 100% !important;
+        box-sizing: border-box;
+        background-color: #0f172a;
+    }
+
+    /* --- Stats Panelini Sıkıştır (Uygulama İçin) --- */
+    #stats-panel {
+        display: flex !important;
+        flex-wrap: wrap !important; /* Taşarsa alta geç */
+        justify-content: center !important;
+        gap: 3px !important; /* Araları kapat */
+        padding: 2px !important;
+        font-size: 8px !important; /* Yazıları iyice küçült */
+        width: 100% !important;
+        box-sizing: border-box;
+        background-color: #1e293b !important;
+        border-radius: 10px;
+    }
+    
+    #stats-panel button {
+        font-size: 8px !important;                
+        padding: 3px 5px !important; /* Padding'i azalt */
+        white-space: nowrap !important;
+        flex: 0 1 auto !important; /* Butonlar kendi boyutunda kalsın */
+    }
+    
+    /* İsim/Rank sığmıyorsa küçült */
+    #user-name-display {
+        font-size: 9px !important;
+    }
+    
+    /* 4. Sesleri 3'lü Diz */
+    .grid {                
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+        padding: 5px !important;
+    }
+
+    /* 5. Butonları Eşitle */
+    .card {
+        padding: 6px !important; 
+        position: relative;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        min-height: 95px !important; 
+        background-color: #1e293b !important;
+        border-radius: 10px;
+    }
+    
+    /* SES İSMİ */
+    .card h3 {
+        font-size: 10px !important;
+        margin: 2px 0 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: white;
+    }
+    
+    .medal-css {
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 9px !important;
+        top: 3px !important;
+        right: 3px !important;
+        z-index: 10; 
+    }
+
+    /* OYNAT BUTONU */
+    .play-btn {
+        padding: 7px !important;
+        font-size: 10px !important;
+        margin-top: auto;
+        background-color: #38bdf8 !important;
+        color: #0f172a !important;
+        border-radius: 6px;
+    }
+}
+    </style>
+</head>
+<body>
+
+<div id="achievement-toast" class="achievement">
+    <div class="achievement-icon" id="ach-icon">🏆</div>
+    <div class="achievement-text">
+        <h4 id="ach-title" style="margin:0; font-size:14px;">BAŞARIM AÇILDI!</h4>
+        <p id="ach-desc" style="margin:0; font-size:12px;">Gizli bir şeyler buldun...</p>
+    </div>
+</div>
+
+<div class="sidebar">
+    <h2 id="logo" style="color: #38bdf8; text-align: center; cursor: pointer; font-weight:800; letter-spacing:-1px;" onclick="gizliTikla()">MEME HUB</h2>
+    <button class="cat-btn trend-btn" onclick="yukle('trendler')">DÜNYA GÜNDEMİ 🔥</button>
+    <button class="cat-btn game-btn" onclick="oyunuBaslat()">DELİRMELİK OYUN 🤡</button>
+    <button class="cat-btn random-btn" onclick="rastgeleCal()">KARIŞIK ÇAL 🎲</button>
+    <button class="cat-btn fav-menu-btn" onclick="yukle('favoriler')">FAVORİLERİM ★</button>
+    
+    <button class="cat-btn" onclick="yukle('anime')">Anime</button>
+    <button class="cat-btn" onclick="yukle('oyun')">Oyunlar</button>
+    <button class="cat-btn" onclick="yukle('komik')">Komik</button>
+    
+    <div class="request-area" style="margin-top: 20px;">
+        <button type="button" class="send-btn" onclick="istekModaliAc()" style="width: 100%; padding: 12px; font-weight: bold; border-radius: 8px;">🎤 İSTEK GÖNDER</button>
+    </div>
+</div>
+
+<div id="istekModal" class="modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center;">
+    <div class="modal-icerik" style="background: #1e293b; padding: 15px; width: 95%; max-width: 450px; border-radius: 15px; border: 2px solid #facc15; position: relative;">
+        <span onclick="modalKapat()" style="color: #facc15; position: absolute; right: 15px; top: 10px; font-size: 26px; font-weight: bold; cursor: pointer; line-height: 1;">&times;</span>
+        <h3 style="color: #facc15; text-align: center; margin-bottom: 15px; margin-top: 5px;">Yeni Ses Öner</h3>
+        
+        <iframe 
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfai_fveYr_1RFWdYzb3ijjJgQk8UwreSOzXhsH70D_z1X_LQ/viewform?embedded=true" 
+            width="100%" 
+            height="450" 
+            frameborder="0" 
+            marginheight="0" 
+            marginwidth="0"
+            onload="formGonderildi()"
+            style="border-radius: 10px; background: white;">
+            Yükleniyor...
+        </iframe>
+    </div>
+</div>
+
+<div class="main">
+    <div id="ust-alan" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
+        <input type="text" id="ara" class="request-input" style="max-width: 400px; margin-bottom: 0;" onkeyup="filtrele()" placeholder="Seslerde ara...">
+        
+        <div id="stats-panel" style="display: flex; align-items: center; gap: 12px; background: rgba(30, 41, 59, 0.6); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3);">
+            
+            <div id="auth-status-area" style="display: flex; align-items: center; gap: 10px;">
+                <button id="login-btn" onclick="document.getElementById('auth-modal').style.display='flex'" style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px;">GİRİŞ YAP 👤</button>
+                
+                <div id="admin-panel-btn" style="display: none;">
+                    <button onclick="adminPaneliAc()" style="background: linear-gradient(45deg, #facc15, #eab308); color: #000; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3); white-space: nowrap;">👑 YÖNETİM</button>
+                </div>
+            </div>
+
+            <button onclick="basarimMenusuAc()" style="background: #10b981; border: none; color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 11px; display: flex; align-items: center; gap: 5px; transition: 0.3s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                BAŞARIMLAR 🏆
+            </button>
+
+            <div style="text-align: right;">
+                <div id="rankName" style="color: #fbbf24; font-weight: 800; font-size: 11px; text-transform: uppercase;">YÜKLENİYOR...</div>
+                <div style="width: 100px; height: 5px; background: #0f172a; border-radius: 10px; margin: 4px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                    <div id="xpBarFill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); transition: 0.5s;"></div>
+                </div>
+                <div id="xpText" style="font-size: 10px; color: #94a3b8; font-weight: 600;">YÜKLENİYOR...</div>
+            </div>
+
+            <div style="position: relative; display: flex; align-items: center;">
+                <button onclick="temaListesiToggle()" style="background: rgba(148, 163, 184, 0.2); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: 0.3s;" onmouseover="this.style.background='rgba(56, 189, 248, 0.2)'" onmouseout="this.style.background='rgba(148, 163, 184, 0.2)'">🎨</button>
+                
+                <div id="tema-menu" style="display: none; position: absolute; top: 30px; right: 0; background: #1e293b; border: 2px solid #38bdf8; border-radius: 12px; padding: 8px; z-index: 1000; width: 130px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                    <button class="t-btn" onclick="temaSec('default')" style="background:#0f172a; border: 1px solid #38bdf8;">Standart 🌌</button>
+                    <button class="t-btn" onclick="temaSec('ramazan')" style="background:#062006; border: 1px solid #fbbf24; color: #fbbf24;">Ramazan 🌙</button>
+                    <button class="t-btn" onclick="temaSec('cyber')" style="background:#2d0b3d; border: 1px solid #f0abfc; color: #f0abfc;">Cyber ⚡</button>
+                    <button class="t-btn" onclick="temaSec('ocean')" style="background:#0c4a6e; border: 1px solid #7dd3fc; color: #7dd3fc;">Okyanus 🌊</button>
+                    <button class="t-btn" onclick="temaSec('forest')" style="background:#064e3b; border: 1px solid #6ee7b7; color: #6ee7b7;">Orman 🌿</button>
+                </div>
+            </div>
+
+            <button onclick="kurallariGoster()" style="background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; font-size: 12px;">?</button>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+        <h2 id="baslik" style="color: #e94560; font-weight:800; margin:0;">SESLER</h2>
+        <div id="sort-options" style="display: none; gap: 8px;">
+            <button onclick="sirala('alfabetik', this)" id="sort-az" class="sort-btn active" style="padding: 4px 10px; font-size: 11px; cursor: pointer; border-radius: 8px; border: 1px solid #38bdf8; background: rgba(56, 189, 248, 0.1); color: #38bdf8; font-weight: bold;">A-Z</button>
+            <button onclick="sirala('populer', this)" id="sort-pop" class="sort-btn" style="padding: 4px 10px; font-size: 11px; cursor: pointer; border-radius: 8px; border: 1px solid #94a3b8; background: rgba(148, 163, 184, 0.1); color: #94a3b8; font-weight: bold;">POPÜLER 🔥</button>
+        </div>
+    </div>
+
+    <div class="grid" id="liste"></div>
+
+<footer class="site-footer">
+    <div class="copyright-text">
+        &copy; 2026 Meme Hub. Tüm hakları saklıdır. <br>
+        <span style="font-size: 11px; opacity: 0.5;">SayhanN tarafından geliştirilmiştir.</span>
+    </div>
+
+    <div style="margin-bottom: 15px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+        <a href="javascript:void(0)" onclick="yasalModalAc('hakkimizda')" style="color: #38bdf8; text-decoration: none; font-size: 11px; font-weight: 600; opacity: 0.8;">Hakkımızda</a>
+        <a href="javascript:void(0)" onclick="yasalModalAc('gizlilik')" style="color: #38bdf8; text-decoration: none; font-size: 11px; font-weight: 600; opacity: 0.8;">Gizlilik Politikası</a>
+        <a href="javascript:void(0)" onclick="yasalModalAc('kullanim')" style="color: #38bdf8; text-decoration: none; font-size: 11px; font-weight: 600; opacity: 0.8;">Kullanım Şartları</a>
+        <a href="javascript:void(0)" onclick="yasalModalAc('iletisim')" style="color: #38bdf8; text-decoration: none; font-size: 11px; font-weight: 600; opacity: 0.8;">İş Birliği & İletişim</a>
+    </div>
+
+    <button class="copyright-btn" onclick="document.getElementById('copyright-modal').style.display='flex'">
+        Telif Hakkı Bildirimi / Copyright Notice
+    </button>
+</footer>
+</div>
+
+<div id="auth-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:11000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div class="auth-box">
+        <button onclick="document.getElementById('auth-modal').style.display='none'" style="position:absolute; right:20px; top:20px; background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">✕</button>
+        <h2 id="auth-modal-title" style="color:#38bdf8; margin-top:0; font-weight:800;">Giriş Yap</h2>
+        <p id="auth-info" style="color:#94a3b8; font-size:12px; margin-bottom:20px;">Hesabına bağlan ve XP'lerini senkronize et!</p>
+        
+        <div class="auth-input-group">
+            <input type="text" id="auth-username" class="request-input" placeholder="Kullanıcı Adı" style="margin-bottom:5px;">
+            <input type="password" id="auth-password" class="request-input" placeholder="Şifre" style="margin-bottom:5px;">
+            <p id="password-rule" style="font-size: 10px; color: #fbbf24; margin: 5px 0;">* Şifre min. 6 karakter ve en az 1 rakam içermeli.</p>
+            <p id="auth-error" class="auth-error-text"></p>
+        </div>
+
+        <button id="auth-main-btn" onclick="handleAuthSubmit()" class="send-btn" style="background:#38bdf8; color:#0f172a; margin-top:10px;">GİRİŞ YAP</button>
+        
+        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; text-align:center;">
+            <p id="auth-switch-text" style="font-size:12px; color:#94a3b8;">
+                Hesabın yok mu? <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color:#38bdf8; text-decoration:none; font-weight:bold;">Kayıt Ol</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div id="yasal-bilgi-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10002; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; width:90%; max-width:450px; border-radius:20px; border:2px solid #38bdf8; padding:25px; position:relative; max-height: 80vh; overflow-y: auto;">
+        <button onclick="document.getElementById('yasal-bilgi-modal').style.display='none'" style="position:absolute; right:20px; top:20px; background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">✕</button>
+        <div id="yasal-icerik-alanı"></div>
+    </div>
+</div>
+
+<div id="copyright-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; width:90%; max-width:450px; border-radius:20px; border:2px solid #e94560; padding:25px; position:relative;">
+        <button onclick="document.getElementById('copyright-modal').style.display='none'" style="position:absolute; right:20px; top:20px; background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">✕</button>
+        <h2 style="color:#e94560; margin-top:0;">Telif Bildirimi</h2>
+        <p style="color:#94a3b8; font-size:13px; line-height:1.6;">
+            Sitemizdeki içerikler internet üzerindeki açık kaynaklardan derlenmiştir. Hak sahibi olduğunuz bir içeriğin kaldırılmasını istiyorsanız lütfen aşağıdaki formu doldurunuz.
+        </p>
+         <form id="copyright-form" action="https://formspree.io/f/xlgwpgoq" method="POST" style="margin-top:15px;">
+            <input type="email" name="_replyto" class="request-input" placeholder="E-posta adresiniz" required>
+            <textarea name="copyright_message" class="request-input" style="height:100px; resize:none;" placeholder="Lütfen telifli içeriği ve kanıt linkini belirtin..." required></textarea>
+            <button type="submit" class="send-btn">BİLDİRİMİ GÖNDER</button>
+        </form>
+    </div>
+</div>
+
+<div id="ach-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(8px);">
+    <div style="background:#16213e; width:90%; max-width:450px; border-radius:20px; border:2px solid #10b981; padding:25px; position:relative; max-height:80vh; overflow-y:auto; box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);">
+        <button onclick="document.getElementById('ach-modal').style.display='none'" style="position:absolute; right:20px; top:20px; background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">✕</button>
+        <h2 style="color:#10b981; margin-top:0; font-weight:800; display:flex; align-items:center; gap:10px;">
+            BAŞARIMLAR <span style="font-size:18px;">🏆</span>
+        </h2>
+        <p style="color:#94a3b8; font-size:12px; margin-bottom:20px;">Görevleri tamamla, XP'leri kap!</p>
+        <div id="ach-list" style="display:grid; gap:12px;"></div>
+    </div>
+</div>
+
+<div class="signature">SayhanN</div>
+
+<div id="cerez-onay" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e293b; border:1px solid #38bdf8; padding:15px 25px; border-radius:50px; z-index:10005; align-items:center; gap:15px; box-shadow:0 10px 30px rgba(0,0,0,0.8); width:90%; max-width:500px; backdrop-filter:blur(10px);">
+    <p style="margin:0; font-size:12px; color:#94a3b8; flex:1; font-family:'Inter', sans-serif;">
+        🍪 XP puanın ve favorilerin için çerezleri kullanıyoruz. <a href="javascript:void(0)" onclick="yasalModalAc('gizlilik')" style="color:#38bdf8; text-decoration:none; font-weight:bold;">Detaylar</a>
+    </p>
+    <button onclick="cerezKabulEt()" style="background:#38bdf8; border:none; color:#0f172a; padding:8px 15px; border-radius:20px; font-weight:800; cursor:pointer; font-size:11px; transition:0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">ANLADIM</button>
+</div>
+
+<div id="admin-modal-placeholder"></div> 
+
+<div id="info-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:20000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div style="background:#1e293b; width:90%; max-width:400px; border-radius:20px; border:2px solid #38bdf8; padding:25px; position:relative; box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);">
+        <button onclick="document.getElementById('info-modal').style.display='none'" style="position:absolute; right:20px; top:20px; background:none; border:none; color:#94a3b8; font-size:24px; cursor:pointer;">✕</button>
+        
+        <div style="text-align:center;">
+            <h2 style="color:#facc15; margin-bottom:15px; font-size:18px; font-weight:800;">📜 MEME HUB SİSTEMİ</h2>
+            
+            <div style="text-align:left; background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; font-size:13px; color:#e2e8f0; line-height:1.8; border: 1px solid rgba(56, 189, 248, 0.1);">
+                ✨ Yeni Keşif: <span style="color:#10b981; font-weight:bold;">+25 XP</span><br>
+                🎧 Tekrar Dinleme: <span style="color:#10b981; font-weight:bold;">+10 XP</span><br>
+                🤡 Deli Oyunu: <span style="color:#10b981; font-weight:bold;">+15 XP</span><br>
+                🏆 Başarımlar: <span style="color:#facc15; font-weight:bold;">Efsane XP!</span>
+            </div>
+
+            <div style="margin-top:20px; padding:12px; border: 1px dashed #38bdf8; border-radius:10px; background:rgba(56, 189, 248, 0.05);">
+                <p style="color:#38bdf8; font-size:12px; font-weight:800; margin-bottom:5px; text-transform:uppercase;">⚠️ SİSTEM NOTU</p>
+                <p style="color:#94a3b8; font-size:11px; font-style:italic; margin:0;">
+                    "XP ve aktiflik durumuna göre sana özel rütbeler verilecektir. Hedefin: <span style="color:#facc15; font-weight:bold;">İFTARIN EFENDİSİ!</span>"
+                </p>
+            </div>
+
+            <button onclick="document.getElementById('info-modal').style.display='none'" style="margin-top:20px; width:100%; background:#38bdf8; color:#0f172a; border:none; padding:12px; border-radius:10px; font-weight:800; cursor:pointer; transition:0.3s;">ANLAŞILDI KANKA</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const arsiv = {
+        anime: [
+            {id: "a1", ad: "Aizen - Yokoso", dosya: "aizen-yokoso-full.mp3"},
+            {id: "a2", ad: "Gojo - Yowai Mo", dosya: "gojo-yowai-mo.mp3"},
+            {id: "a3", ad: "Sukuna - Tenkai", dosya: "sukunas-ryoiki-tenkai.mp3"},
+            {id: "a4", ad: "Re:Zero - Death", dosya: "re-zero-return-by-death.mp3"},
+            {id: "a5", ad: "Naruto - Nani", dosya: "nani.mp3"},
+            {id: "a6", ad: "Light Laugh", dosya: "light-yagami-laugh.mp3"},
+            {id: "a7", ad: "Anime Girl - Hey", dosya: "hey.mp3"},
+            {id: "a8", ad: "Yamete Kudasai", dosya: "yamete-kudasai.mp3"},
+            {id: "a9", ad: "Anime - Ahh", dosya: "ahh(+18).mp3"},
+            {id: "a10", ad: "Mayuri - Tuturu", dosya: "tuturu_1.mp3"},
+            {id: "a11", ad: "Tannhauser - Wow", dosya: "wow-matikane-tannhauser.mp3"},
+            {id: "a12", ad: "Yuta - Louder", dosya: "yuta-louder.mp3"},
+            {id: "a13", ad: "Shinobu - Ara Ara", dosya: "ara-ara-sayonara-mp3cut.mp3"},
+            {id: "a14", ad: "Nyan Nyan", dosya: "audio_default_5294.mp3"},
+            {id: "a15", ad: "Bleach - Sad Theme", dosya: "bleach-sad.mp3"},
+            {id: "a16", ad: "Tanjiro - Breath", dosya: "demon-slayer-breath.mp3"},
+            {id: "a17", ad: "Nice Fighto Boy", dosya: "nice-fighto-boy.mp3"},
+            {id: "a18", ad: "Pain - Shinra Tensei", dosya: "pain-itami-o-kanjiro.mp3"},
+            {id: "a19", ad: "Shunsui - Bankai", dosya: "shunsui-bankai.mp3"},
+            {id: "a20", ad: "Goku - Drip Yelling", dosya: "goku-yelling-drip.mp3"},
+            {id: "a21", ad: "Akaza - Kyojuro!", dosya: "akaza-voice-pt-1.mp3"},
+            {id: "a22", ad: "Anime Girl - Senpai!", dosya: "anime-girl-senpai.mp3"},
+            {id: "a23", ad: "AOT - Intermission", dosya: "aot-eyecatch-intermission-song-end.mp3"},
+            {id: "a24", ad: "Bachira - Boom", dosya: "bachira-boom.mp3"},
+            {id: "a25", ad: "Cute Anime Roar", dosya: "cuteanimeroar_bybakster.mp3"},
+            {id: "a26", ad: "Eee? Eehh!", dosya: "eh-eh-ehhhh.mp3"},
+            {id: "a27", ad: "Paimon - Ehe Te Nandayo!", dosya: "ehe-tte-nandayo.mp3"},
+            {id: "a28", ad: "Gambare Gambare", dosya: "gambare.mp3"},
+            {id: "a29", ad: "Giorno - Golden Wind", dosya: "giornos-theme-but-only-the-best-part-is-in_vwd15lya_lyb0-online-audio-converter.mp3"},
+            {id: "a30", ad: "Popue!", dosya: "popue.mp3"},
+            {id: "a31", ad: "Pizza Mozzarella", dosya: "gyro-zeppeli-pizza-mozzarella-10-minutes-mp3cut.mp3"},
+            {id: "a32", ad: "Haise!", dosya: "haise-haise.mp3"},
+            {id: "a33", ad: "Miku - Weeeee", dosya: "hatsune-miku-weeeeeeee.mp3"},
+            {id: "a34", ad: "Fubuki - Scatman", dosya: "im scatmann fubuki.mp3"},
+            {id: "a35", ad: "Kakegurui - Masho", dosya: "kakegurui-masho.mp3"},
+            {id: "a36", ad: "Lero Lero", dosya: "lero-lero-lero-lero_0c1qwjyh.mp3"},
+            {id: "a37", ad: "Nezuko Chan!", dosya: "nezuko chan.mp3"},
+            {id: "a38", ad: "Oh My God!", dosya: "oh-my-god-anime.mp3"},
+            {id: "a39", ad: "Plus Ultra!", dosya: "plus-ultra.mp3"},
+            {id: "a40", ad: "Yatta!", dosya: "yatta.mp3"},
+            {id: "a41", ad: "Yes Yes Yes!", dosya: "yes-yes-yes-yes-yes.mp3"},
+            {id: "a42", ad: "Dio - Road Roller", dosya: "yol-silindiriiiiii.mp3"},
+            {id: "a43", ad: "Blackbeard - Laugh", dosya: "zehahaha_laugh.mp3"},
+            {id: "a44", ad: "Zeno-sama - Uhm", dosya: "zeno-sama-uhm.mp3"},
+            {id: "a45", ad: "Doppio - Ringtone", dosya: "rurururu-doppios-ringtone-jojo-all-star-battle.mp3"},
+            {id: "a46", ad: "Sans Sound", dosya: "sans_RbBhTQn.mp3"},
+            {id: "a47", ad: "Wow! (Anime Effect)", dosya: "wow-anime-effect.mp3"},
+            {id: "a48", ad: "Eren - Sono nawa", dosya: "sono-nawa-eren-yeager.mp3"},
+            {id: "a49", ad: "Eren - Mikasa Yamero", dosya: "eren-mikasa-yamero.mp3"},
+            {id: "a50", ad: "Titan Roar", dosya: "eren-titan-roar.mp3"},
+            {id: "a51", ad: "Eren Scream", dosya: "eren-yeager-scream.mp3"},
+            {id: "a52", ad: "Erwin - Advance!", dosya: "erwin-advance.mp3"},
+            {id: "a53", ad: "Erwin - Speech", dosya: "erwin-speech.mp3"},
+            {id: "a54", ad: "Levi - Heichou", dosya: "heichou.mp3"},
+            {id: "a55", ad: "Mikasa - Eren!", dosya: "mikasa eren.mp3"},
+            {id: "a56", ad: "Eren - My Name Is", dosya: "my-name-is-eren-yeager.mp3"},
+            {id: "a57", ad: "Eren - Nanaimo!", dosya: "nanaimo.mp3"},
+            {id: "a58", ad: "Eren - Tatakae (v1)", dosya: "tatakae 1.mp3"},
+            {id: "a59", ad: "Eren - Tatakae (v2)", dosya: "tatakae 2.mp3"},
+            {id: "a60", ad: "Eren - Yamerooo!", dosya: "yamerooo-.mp3"},
+            {id: "a61", ad: "Zeke - Eren Yeager", dosya: "zeke - eren jeager.mp3"},
+            {id: "a62", ad: "Levi - KENNY!", dosya: "livai-says-kennnyyyy.mp3"},
+            {id: "a63", ad: "Annie - Armin!", dosya: "annie-armin!.mp3"},
+            {id: "a64", ad: "Armin - Eren!", dosya: "armin-says-eren.mp3"},
+            {id: "a65", ad: "Armin - My Name", dosya: "armin-says-his-name.mp3"},
+            {id: "a66", ad: "Armin - I am Soldier", dosya: "armin-says-im-a-soldier-.mp3"},
+            {id: "a67", ad: "Armin - Mikasa!", dosya: "armin-says-mikasa.mp3"},
+            {id: "a68", ad: "Armin - Scream", dosya: "armin-scream.mp3"},
+            {id: "a69", ad: "Kamona!", dosya: "kamona.mp3"},
+            {id: "a70", ad: "Levi - Shinzou wo Sasageyo", dosya: "levi_say_give_your_heart_vocals.mp3"},
+            {id: "a71", ad: "Levi - My Name", dosya: "livai-says-his-name.mp3"},
+            {id: "a72", ad: "Mikasa - Deep Breath", dosya: "mikasa-says-take-a-deep-breath.mp3"},
+            {id: "a73", ad: "Levi - Nanda?", dosya: "nanda.mp3"},
+            {id: "a74", ad: "Levi - Oi oi oi matte", dosya: "oi-oi-oi-matte-matte.mp3"},
+            {id: "a75", ad: "Mikasa - Arigato", dosya: "mikasa-arigato.mp3"},
+            {id: "a76", ad: "Mikasa - Armin!", dosya: "mikasa-armin.mp3"},
+            {id: "a77", ad: "Mikasa - My Name", dosya: "mikasa-says-name.mp3"},
+            {id: "a78", ad: "Rin - Sae!", dosya: "rin-saying-sae.mp3"},
+            {id: "a79", ad: "Bachira - Bam!", dosya: "bachira-bam-kid.mp3"},
+            {id: "a80", ad: "Isagi - I'm a Striker", dosya: "im-a-striker.mp3"},
+            {id: "a81", ad: "Isagi - Scream", dosya: "isagi-yoichi-scream.mp3"},
+            {id: "a82", ad: "Isagi - I Want to Win", dosya: "i-want-to-win-with-my-goal.mp3"},
+            {id: "a83", ad: "Blue Lock - Kaiser", dosya: "kaisen-blue-lock.mp3"},
+            {id: "a84", ad: "Isagi - Direct Shot", dosya: "my-direct-shot.mp3"},
+            {id: "a85", ad: "Ohayo!", dosya: "ohayo.mp3"},
+            {id: "a86", ad: "Rin - I'm Gonna Crush You", dosya: "rin-saying-im-gonna-crush-you.mp3"},
+            {id: "a87", ad: "Rin - Isagi!", dosya: "rin-saying-isagi.mp3"},
+            {id: "a88", ad: "Rin - Wait!", dosya: "rin-saying-wait-.mp3"},
+            {id: "a89", ad: "Rin - Wednesday", dosya: "rin-saying-wednesday.mp3"},
+            {id: "a90", ad: "Rin - Deep Voice", dosya: "rin-voice.mp3"},
+            {id: "a91", ad: "Sae Itoshi - Awakening", dosya: "sae-itoshi-awakening-blue-lock.mp3"},
+            {id: "a92", ad: "Isagi - Score it Egoist", dosya: "score-it-egoist-isagi-yoichi.mp3"},
+            {id: "a93", ad: "Ayaya Ayaya!", dosya: "kiniro-mosaic-ayaya-ayaya_Hdugg5f.mp3"},
+            {id: "a94", ad: "Herta - Kuru Kuru", dosya: "kurukuru.mp3"},
+            {id: "a95", ad: "Osaka - Everynyan!", dosya: "hello-everymeow-how-are-you-fine-thank-you.mp3"}
+        ],
+        oyun: [
+    { id: "o1", ad: "Among Us Troll", dosya: "amongus-troll.mp3", kategori: "oyun" },
+    { id: "o2", ad: "Bomb Planted", dosya: "bomb-has-been-planted-sound-effect-cs-go.mp3", kategori: "oyun" },
+    { id: "o3", ad: "Ateş Altındayım", dosya: "cs-1-6-ates-altindayim-yardim-edin.mp3", kategori: "oyun" },
+    { id: "o4", ad: "Hadi Hadi Hadi", dosya: "cs-1-6-hadi-hadi-hadi.mp3", kategori: "oyun" },
+    { id: "o5", ad: "Olumsuz", dosya: "cs-1-6-olumsuz.mp3", kategori: "oyun" },
+    { id: "o6", ad: "Önden Girelim", dosya: "cs-1-6-onden-girelim.mp3", kategori: "oyun" },
+    { id: "o7", ad: "Pozisyon Alın", dosya: "cs-1-6-pozisyon-alin-ve-emrimi-bekleyin.mp3", kategori: "oyun" },
+    { id: "o8", ad: "Yardım Lazım", dosya: "cs-1-6-yardima-ihtiyacim-var.mp3", kategori: "oyun" },
+    { id: "o9", ad: "CS:GO Defuse", dosya: "csgo-defuse-sound-effect.mp3", kategori: "oyun" },
+    { id: "o10", ad: "Mega Knight", dosya: "evolution-mega-knight.mp3", kategori: "oyun" },
+    { id: "o11", ad: "FNAF Scream", dosya: "five-nights-at-freddys-full-scream-sound_2.mp3", kategori: "oyun" },
+    { id: "o12", ad: "FNAF Music Box", dosya: "fnaf-1-music-box.mp3", kategori: "oyun" },
+    { id: "o13", ad: "Fortnite Dance", dosya: "fortnite-default-dance-bass-boosted.mp3", kategori: "oyun" },
+    { id: "o14", ad: "Gaster Vanish", dosya: "gaster-vanish.mp3", kategori: "oyun" },
+    { id: "o15", ad: "Ah Shit Here We Go", dosya: "gta-san-andreas-ah-shit-here-we-go-again_R5XAZfZ.mp3", kategori: "oyun" },
+    { id: "o16", ad: "GTA Wasted", dosya: "gta-v-wasted-death-sound.mp3", kategori: "oyun" },
+    { id: "o17", ad: "He He He Ha", dosya: "hi-hi-hi-ha-clash-royale.mp3", kategori: "oyun" },
+    { id: "o18", ad: "Hog Rider", dosya: "hog-rider.mp3", kategori: "oyun" },
+    { id: "o19", ad: "MC Başarım", dosya: "minecraft-basarm-sesi.mp3", kategori: "oyun" },
+    { id: "o20", ad: "MC İksir", dosya: "minecraft-drinking-sound-effect.mp3", kategori: "oyun" },
+    { id: "o21", ad: "Piuv Piuv", dosya: "piuvpiuvcoltmp3.mp3", kategori: "oyun" },
+    { id: "o22", ad: "Roblox Death", dosya: "roblox-death-sound_1.mp3", kategori: "oyun" },
+    { id: "o23", ad: "Rust Headshot", dosya: "rust-headshot.mp3", kategori: "oyun" },
+    { id: "o24", ad: "Sneaky Golem", dosya: "sneaky-golem.mp3", kategori: "oyun" },
+    { id: "o25", ad: "SOVA ARKAN VAR", dosya: "sova-arkan-var-sova-ar-kan-vaar.mp3", kategori: "oyun" }
+
+        ],
+        komik: [
+            {id: "k1", ad: "1.000.000.000 IQ", dosya: "1-000-000-000-iq.mp3"},
+            {id: "k2", ad: "Abi Geldiler Abi!", dosya: "abi-geldiler-abi.mp3"},
+            {id: "k3", ad: "Ağlama Hadi Oyna", dosya: "aglama-hadi-oyna.mp3"},
+            {id: "k4", ad: "Ahmet Ne Gülüyon Lan", dosya: "ahmet-ne-guluyon-lan-oc.mp3"},
+            {id: "k5", ad: "Allahümme Yarab", dosya: "allahumme-yarab.mp3"},
+            {id: "k6", ad: "Amin", dosya: "amin.mp3"},
+            {id: "k7", ad: "Amın Love", dosya: "amın-love.mp3"},
+            {id: "k8", ad: "Ananı Avradını Şu Karizmaya Bakın", dosya: "anani-avradini-su-karizmaya-bakin.mp3"},
+            {id: "k9", ad: "Ananı Yakarım", dosya: "anani-yakarim.mp3"},
+            {id: "k10", ad: "Anavı... (Seri Küfür)", dosya: "anavi-sikim.mp3"},
+            {id: "k11", ad: "Auughhh", dosya: "auughhh.mp3"},
+            {id: "k12", ad: "Aykut Elmas - Haber Bülteni", dosya: "aykut-elmas-haber-bulteni-aclslar-audiotrimmer_W3u9wPS.mp3"},
+            {id: "k13", ad: "Aykut Elmas - Meal Diyor", dosya: "aykut-elmas-meal-diyor.mp3"},
+            {id: "k14", ad: "Aykut Elmas - ÖC Geliyor", dosya: "aykut-elmas-oc-geliyor.mp3"},
+            {id: "k15", ad: "Banane Amk", dosya: "banane-amk.mp3"},
+            {id: "k16", ad: "Bas Bana Tuğkan", dosya: "basbanatugkan.mp3"},
+            {id: "k17", ad: "Bu Lavuk Kim Amk", dosya: "bu-lavuk-kim-amk.mp3"},
+            {id: "k18", ad: "Ronaldo - Arruspuchuchu", dosya: "cristiano-ronaldo-turkish-arruspuchuchu.mp3"},
+            {id: "k19", ad: "CS 1.6 - Anlaşıldı Tamam", dosya: "cs-1-6-anlasildi-tamam.mp3"},
+            {id: "k20", ad: "Dalak Malak", dosya: "dalak-malak.mp3"},
+            {id: "k21", ad: "Fahhhhhhhhhhhhhh", dosya: "fahhhhhhhhhhhhhh.mp3"},
+            {id: "k22", ad: "Aykut Elmas - Davulcu Vur Davula", dosya: "davulcu-vur-davula-aykut-elmas.mp3"},
+            {id: "k23", ad: "Deniz Abi Kornaya Bas", dosya: "deniz-abi-kornaya-bas.mp3"},
+            {id: "k24", ad: "Dexter Meme", dosya: "dexter-meme.mp3"},
+            {id: "k25", ad: "Duydun mu Huysuz?", dosya: "duydun-mu-huysuz.mp3"},
+            {id: "k26", ad: "Ebonivon - Basursun", dosya: "ebonivon-basursun_WBDnoAM.mp3"},
+            {id: "k27", ad: "Eller Buz Gibi", dosya: "eller-buz-gibi-got-karpuz-gibi.mp3"},
+            {id: "k28", ad: "Emir Sövüş", dosya: "emir-sovuss.mp3"},
+            {id: "k29", ad: "Emrah Koş Ananı...", dosya: "emrah-kos-anani.mp3"},
+            {id: "k30", ad: "Faaah", dosya: "faaah.mp3"},
+            {id: "k31", ad: "Fatih Sultan Mehmet", dosya: "fatih-sultan-mehmet.mp3"},
+            {id: "k32", ad: "Full Bass Lvbel C5", dosya: "full-bass-lvbel-c5.mp3"},
+            {id: "k33", ad: "Gey", dosya: "gey.mp3"},
+            {id: "k34", ad: "Gökhan Abi Boyun Ağrısı", dosya: "gokhan-abi-boyun-agrisi.mp3"},
+            {id: "k35", ad: "Gopgopgop", dosya: "gopgopgop.mp3"},
+            {id: "k36", ad: "Götümü Sken Yok mu", dosya: "gotumu-sken-yokmu.mp3"},
+            {id: "k37", ad: "Gugu Gaga", dosya: "gugu-gaga.mp3"},
+            {id: "k38", ad: "Gürkan Karımı Niye...", dosya: "gurkan-karimi-niye.mp3"},
+            {id: "k39", ad: "Gürkan!", dosya: "gürkan.mp3"},
+            {id: "k40", ad: "Hanımışigottimontişim", dosya: "hanimisigottimontisim.mp3"},
+            {id: "k41", ad: "Haramball", dosya: "haramball_ZFfRyh2.mp3"},
+            {id: "k42", ad: "Hayiydiy kaydeş", dosya: "hayiydiy-kaydes.mp3"},
+            {id: "k43", ad: "Hub Intro Sound", dosya: "hub-intro-sound.mp3"},
+            {id: "k44", ad: "İa ia yeye yeye", dosya: "ia-ia-ahh-yeye-yeye-lovely-sad.mp3"},
+            {id: "k45", ad: "Imam Ali Bashar", dosya: "imam-ali-bashar.mp3"},
+            {id: "k46", ad: "Taşköprü Sarımsak", dosya: "kastamonu-taskopru-sarimsak-geldi.mp3"},
+            {id: "k47", ad: "Kedi Gülüşü", dosya: "kedi-gülüşü.mp3"},
+            {id: "k48", ad: "Kedullah", dosya: "kedullah.mp3"},
+            {id: "k49", ad: "Kimse Görmeden", dosya: "kimse-gormeden.mp3"},
+            {id: "k50", ad: "Mesut Gelemeyebilirim", dosya: "mesut-gelemeyebilirim.mp3"},
+            {id: "k51", ad: "Konuş Artık", dosya: "konus-artik_LBk1CBn.mp3"},
+            {id: "k52", ad: "Korna Tır", dosya: "korna-tir.mp3"},
+            {id: "k53", ad: "La Dur Ananı...", dosya: "la-dur-anani.mp3"},
+            {id: "k54", ad: "Long Brain Fart", dosya: "long-brain-fart.mp3"},
+            {id: "k55", ad: "Lo Siento Wilson", dosya: "lo-siento-wilson.mp3"},
+            {id: "k56", ad: "Lüks Artvin", dosya: "luks-artvin.mp3"},
+            {id: "k57", ad: "Mahmut Seni Çok Seviyorum Dayı", dosya: "mahmut-seni-cok-seviyorum-dayi.mp3"},
+            {id: "k58", ad: "Manifest", dosya: "manifest.mp3"},
+            {id: "k59", ad: "Merhamet Edin Efendim", dosya: "merhamet-edin-efendim_sUJSz2j.mp3"},
+            {id: "k60", ad: "Messi Kontrol", dosya: "messi-kontrol.mp3"},
+            {id: "k61", ad: "Muavin Kek Getir Kek", dosya: "muavin-kek-getir-kek.mp3"},
+            {id: "k62", ad: "Ne Diyooo Oğlum", dosya: "ne-diyooo-oglum.mp3"},
+            {id: "k63", ad: "Oğlum Bune Lan", dosya: "oglum-bune-lan.mp3"},
+            {id: "k64", ad: "Oğlum Çok Üzüldüm Lan", dosya: "oglum-cok-uzuldum-lan.mp3"},
+            {id: "k65", ad: "Okan Buruk", dosya: "okan-buruk.mp3"},
+            {id: "k66", ad: "Orhann", dosya: "orhann.mp3"},
+            {id: "k67", ad: "Osuruk", dosya: "osuruk.mp3"},
+            {id: "k68", ad: "Osuruk 2", dosya: "Osuruk2.mp3"},
+            {id: "k69", ad: "Pantolonlarım Yoktu", dosya: "pantolonlarim-yuktu.mp3"},
+            {id: "k70", ad: "PUBG Recall", dosya: "pubg-recall.mp3"},
+            {id: "k71", ad: "Ramiz Dayı Alarm", dosya: "ramiz-dayi-alarm.mp3"},
+            {id: "k72", ad: "Robotumu S...yorlar", dosya: "robotumu-sikiyorlar.mp3"},
+            {id: "k73", ad: "RTE Suriye", dosya: "rte-suriye.mp3"},
+            {id: "k74", ad: "Rusyada Olanlar Çıkın Ordan", dosya: "rusyada-olanlar-cihin-derhal-ordan.mp3"},
+            {id: "k75", ad: "Şaka Kanka", dosya: "saka-kanka.mp3"},
+            {id: "k76", ad: "Salak Yemin Ediyorum", dosya: "salak-yemin-ediyorum.mp3"},
+            {id: "k77", ad: "Sansar Salvo", dosya: "sansar-salvo.mp3"},
+            {id: "k78", ad: "Sansar Salvo 2", dosya: "sansar-salvo2.mp3"},
+            {id: "k79", ad: "Sansar Salvo 3", dosya: "sansar-salvo3.mp3"},
+            {id: "k80", ad: "Selam Sana İmparator", dosya: "selam-sana-imparator.mp3"},
+            {id: "k81", ad: "Sen Ne Anlatıyon Be Abla", dosya: "sen-ne-anlatiyon-be-abla.mp3"},
+            {id: "k82", ad: "Sikecaaaam", dosya: "sikecaaaam.mp3"},
+            {id: "k83", ad: "Sıkıntı Kardeşim Ya", dosya: "sikinti-kardesim-ya.mp3"},
+            {id: "k84", ad: "Taklaci Güvercin", dosya: "taklaci-guvercin.mp3"},
+            {id: "k85", ad: "Tavuk İieeehh", dosya: "tavuk-iieeehh.mp3"},
+            {id: "k86", ad: "This Is The End", dosya: "this-is-the-end.mp3"},
+            {id: "k87", ad: "Tm Reis Sen Tehlikesin", dosya: "tm-reis-sen-tehlikesin.mp3"},
+            {id: "k88", ad: "Türkçe Rap", dosya: "turkce-rap.mp3"},
+            {id: "k89", ad: "Ulan Sende Bi...", dosya: "ulan-sende-bi.mp3"},
+            {id: "k90", ad: "Ultra İshalli Osuruk", dosya: "ultra-ishalli-osuruk.mp3"},
+            {id: "k91", ad: "Ümidi - Hocaaaaaam", dosya: "umidi-hocaaaaaaam.mp3"},
+            {id: "k92", ad: "Ümidi - Noluyo Lan", dosya: "umidi-noluyo-lan.mp3"},
+            {id: "k93", ad: "Ümit Usta - İki Kuru Versene", dosya: "umit-usta-bize-iki-kuru-versene-bize-be.mp3"},
+            {id: "k94", ad: "Uyansana Lan İzmarit", dosya: "uyansana-lan-izmarit.mp3"},
+            {id: "k95", ad: "Ya Biraz Daha", dosya: "ya-biraz-daha.mp3"},
+            {id: "k96", ad: "Yakup Usta", dosya: "yakup-usta.mp3"},
+            {id: "k97", ad: "Ya Sabır", dosya: "ya-sabir.mp3"},
+            {id: "k98", ad: "Yoh Amna", dosya: "yoh-amna_fhnpM2w.mp3"},
+            {id: "k99", ad: "Yok Diyen Ghostrider", dosya: "yok-diyen-ghostrider.mp3"},
+            {id: "k100", ad: "Yozgat... (Malum Replik)", dosya: "yozgat-yaragi.mp3"},
+            {id: "k101", ad: "Burak Yılmaz - Annee!", dosya: "burak-yilmaz-anneg.mp3"},
+            {id: "k102", ad: "Anne Poğaça Yaptı", dosya: "hocam-anne-pogaca-yapti-aykut-elmas.mp3"},
+            {id: "k103", ad: "Aykut Uç Yiyor", dosya: "hocam-aykut-uc-yiyor.mp3"},
+            {id: "k104", ad: "Fatih Terim - İyi Uykular", dosya: "iyi_uykular.mp3"},
+            {id: "k105", ad: "Konuşma Lan!", dosya: "konusma-lan.mp3"},
+            {id: "k106", ad: "Paramı Geri İstiyorum", dosya: "parami-geri-istiyorum.mp3"},
+            {id: "k107", ad: "Adam Geldi Adam", dosya: "adam-ya-adam-ya-geldi-adam.mp3"},
+            {id: "k108", ad: "Ananı Arıyorum", dosya: "anani-ariyorum.mp3"},
+            {id: "k109", ad: "Bağırma!", dosya: "bagirma.mp3"},
+            {id: "k110", ad: "Bu Ne Saçma Hayat", dosya: "bu-ne-sacma-hayat.mp3"},
+            {id: "k111", ad: "Bu Denyo mu?", dosya: "recep-ivedik-bu-denyomu-dangalakmi-belli-degil.mp3"},
+            {id: "k112", ad: "Sanki Kendim İçin İstedim", dosya: "recep-ivedik-sanki-kendim-icin-istedim-haa.mp3"},
+            {id: "k113", ad: "Sayın Bezmenler", dosya: "sayn-bezmenler.mp3"},
+            {id: "k114", ad: "Uyanın Lan!", dosya: "uyann-lan-diye-bagran-davulcu.mp3"},
+            {id: "k115", ad: "Vallahi Bastım!", dosya: "vallahi-bastim-vallahi-bastim-kac-kac.mp3"},
+            {id: "k116", ad: "Cebinde Paran mı Var?", dosya: "vlc-record-2021-04-18-21h33m23s-yt1s.mp3"},
+            {id: "k117", ad: "Yok Ya!", dosya: "yok-ya.mp3"},
+            {id: "k118", ad: "Kabede Hacılar", dosya: "kabede-hacilar-huu-der-allah.mp3"}
+
+        ]
+    };
+
+// --- 1. FIREBASE KURULUMU (EN ÜSTTE) ---
+const firebaseConfig = {
+    apiKey: "AIzaSyCN5JRNCM0xLZrH_kIoHS_HuUHfCeqBMHQ",
+    authDomain: "memehub-74a65.firebaseapp.com",
+    databaseURL: "https://memehub-74a65-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "memehub-74a65",
+    storageBucket: "memehub-74a65.firebasestorage.app",
+    messagingSenderId: "465812494753",
+    appId: "1:465812494753:web:9be1c5d60cdfa65a1993e0"
+};
+
+// Firebase'i başlat
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// --- 2. DEĞİŞKENLER (SENİNKİLER + CANLI VERİ) ---
+let favoriler = JSON.parse(localStorage.getItem('favList')) || [];
+let trendVerisi = {}; // ARTIK FIREBASE'DEN GELECEK
+let acilanBasarimlar = JSON.parse(localStorage.getItem('achievements')) || [];
+let userXP = parseInt(localStorage.getItem('userXP')) || 0;
+let kesfedilenler = JSON.parse(localStorage.getItem('kesfedilenler')) || [];
+let aktifSes = null, logoTiklama = 0;
+let suAnkiListe = []; 
+let suAnkiKat = '';
+let oyunDogruSayisi = 0;
+let isLoginMode = true;
+let currentUser = null;
+let istekBeklemede = false;
+let ilkYuklenmePasGecildi = false;
+let aktiflikInterval;
+
+// --- 3. FIREBASE CANLI DİNLEME ÜNİTESİ (KASMA ÖNLEYİCİ) ---
+database.ref('trendler').on('value', (snapshot) => {
+    trendVerisi = snapshot.val() || {};
+    
+    const aramaKutusu = document.getElementById('ara');
+    const aramaVarMi = aramaKutusu && aramaKutusu.value.trim() !== "";
+
+    // Sadece rakamları sessizce güncelle (Kasma yapmaz)
+    Object.keys(trendVerisi).forEach(id => {
+        const sayac = document.getElementById(`count-${id}`);
+        if (sayac) {
+            sayac.innerText = `🔥 ${trendVerisi[id]} Kez`;
+        }
+    });
+
+    // Eğer Trendler sayfasındaysak ve arama yapmıyorsak, 
+    // kartları komple silmek yerine sadece sıralarını değiştirelim.
+    if (suAnkiKat === 'trendler' && !aramaVarMi) {
+        // Not: Eğer sıralama değişince kartların anında zıplamasını istiyorsan 
+        // buraya çok karmaşık kod gerekir. Şimdilik sadece rakamları güncelliyoruz.
+        // Liste yerleşimi ancak sayfa değişince veya F5 atınca tam sıralanır.
+        // Bu, kasma ve bulanıklığı %100 bitirir.
+    }
+});
+
+const basarimlarVerisi = [
+    { id: 'ilk_adim', ad: 'İlk Adım', desc: 'Sitede ilk sesini dinledin!', hint: 'Herhangi bir sesi oynat.', icon: '🎧', xp: 50 },
+    { id: 'fav_master', ad: 'Zevk Sahibi', desc: '5 sesi favorilerine ekledin.', hint: 'Beğendiğin 5 sesi yıldızla.', icon: '⭐', xp: 150 },
+    { id: 'sosyal_kelebek', ad: 'Paylaşımcı', desc: 'Bir sesin linkini kopyaladın.', hint: 'Bir sesin linkini arkadaşına göndermek için kopyala.', icon: '🔗', xp: 100 },
+    { id: 'kasif', ad: 'Meraklı Kaşif', desc: 'Logoya 3 kere tıkladın.', hint: 'Sitenin isminde gizli bir şeyler olabilir...', icon: '🕵️‍♂️', xp: 200 },
+    { id: 'hacker', ad: 'Hızlı İstekçi', desc: 'Form üzerinden ilk isteğini attın.', hint: 'Sitede olmayan bir sesi bizden iste.', icon: '✉️', xp: 100 },
+    { id: 'quiz_canavari', ad: 'Deli Profesörü', desc: 'Oyunda 10 doğru cevaba ulaştın.', hint: 'Deli oyununda 10 soruyu üst üste bil.', icon: '🧠', xp: 300 },
+    { id: 'gece_kusu', ad: 'Gece Kuşu', desc: 'Gece yarısından sonra ses dinledin.', hint: 'Gece 00:00 ile 05:00 arası bir ses dinle.', icon: '🦉', xp: 250 },
+    { id: 'trend_avcisi', ad: 'Trend Avcısı', desc: 'Dünya Gündemi sekmesine göz attın.', hint: 'Neyin popüler olduğuna bir bak.', icon: '🔥', xp: 50 },
+    { id: 'sadik_dost', ad: 'Sadık Dost', desc: 'Toplamda 5000 XP kazandın.', hint: 'Sitede vakit geçirerek 5000 XP topla.', icon: '👑', xp: 1000 },
+    { id: 'gurme', ad: 'Meme Gurmesi', desc: '50 farklı ses keşfettin.', hint: 'Arşivdeki 50 farklı sesi en az bir kez dinle.', icon: '🍱', xp: 500 }
+];
+
+const rutbeler = [
+    { ad: "Çaylak Oruçlu", min: 0 },
+    { ad: "Pide Kuyruğu Müdavimi", min: 500 },
+    { ad: "Sahur Muhafızı", min: 1500 },
+    { ad: "İftarın Efendisi", min: 4000 }
+];
+
+function basarimKazan(id) {
+    // 1. Önce kimin başarım kazandığını bulalım
+    const username = localStorage.getItem('username'); // Veya senin sisteminde kullanıcı adı neredeyse
+    if (!username) return;
+
+    if (acilanBasarimlar.includes(id)) return;
+    const basarim = basarimlarVerisi.find(b => b.id === id);
+    if (!basarim) return;
+
+    acilanBasarimlar.push(id);
+
+    // 2. FIREBASE'E KAYDET (Artık localStorage değil, buluta yazıyoruz)
+    const userRef = firebase.database().ref('users/' + username.toLowerCase());
+    
+    userRef.update({
+        achievements: acilanBasarimlar,
+        xp: firebase.database.ServerValue.increment(basarim.xp) // XP'yi güvenli şekilde artırır
+    }).then(() => {
+        console.log("Başarım buluta işlendi kanka! 😎");
+    });
+
+    // Görsel efektler (Toast vs) aynı kalıyor
+    uiGuncelle();
+    const toast = document.getElementById('achievement-toast');
+    if(toast) {
+        document.getElementById('ach-title').innerText = basarim.ad; 
+        document.getElementById('ach-desc').innerText = `${basarim.desc} (+${basarim.xp} XP)`; 
+        document.getElementById('ach-icon').innerText = basarim.icon;
+        toast.classList.add('show'); 
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+}
+
+function kullaniciVerileriniYukle(username) {
+    if (!username) return;
+    
+    firebase.database().ref('users/' + username.toLowerCase()).once('value').then((snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Firebase'deki başarımları ve XP'yi çekip sisteme yüklüyoruz
+            acilanBasarimlar = data.achievements || [];
+            userXP = data.xp || 0;
+            uiGuncelle(); // Ekrandaki XP ve rütbe yazılarını tazeler
+            console.log("Veriler buluttan geldi kanka! ✅");
+        }
+    });
+}
+
+
+function basarimMenusuAc() {
+    const listContainer = document.getElementById('ach-list');
+    const modal = document.getElementById('ach-modal');
+    if(!listContainer || !modal) return;
+    
+    listContainer.innerHTML = '';
+    modal.style.display = 'flex';
+
+    // --- MİSAFİR KONTROLÜ (YENİ) ---
+    if (!currentUser) {
+        listContainer.innerHTML = `
+            <div style="text-align: center; padding: 30px 15px; background: rgba(15, 23, 42, 0.6); border: 2px dashed #334155; border-radius: 15px; margin: 10px;">
+                <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
+                <h3 style="color: #38bdf8; margin: 0 0 8px 0; font-size: 16px; font-weight: 800;">BAŞARIMLAR KİLİTLİ</h3>
+                <p style="color: #94a3b8; font-size: 11px; line-height: 1.5; margin-bottom: 15px;">
+                    Kanka başarımlar ve XP ödülleri sadece <b>hesabı olanlara özel!</b><br>
+                    Hemen giriş yap, rütbeni kasmaya başla. 🔥
+                </p>
+                <button onclick="document.getElementById('ach-modal').style.display='none'; document.getElementById('auth-modal').style.display='flex'" 
+                        style="background: #38bdf8; color: #0f172a; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer;">
+                    Giriş Yap / Kayıt Ol
+                </button>
+            </div>`;
+        return; // Fonksiyonu burada kes, aşağıyı çalıştırma
+    }
+
+    // --- GİRİŞ YAPILMIŞSA SENİN ORİJİNAL KODUN ---
+    basarimlarVerisi.forEach(b => {
+        const acildiMi = acilanBasarimlar.includes(b.id);
+        const gosterilecekMetin = acildiMi ? b.desc : `💡 İpucu: ${b.hint}`;
+        listContainer.innerHTML += `
+            <div style="background:${acildiMi ? 'rgba(16, 185, 129, 0.1)' : '#0f172a'}; 
+                        padding:15px; border-radius:12px; border:1px solid ${acildiMi ? '#10b981' : '#334155'}; 
+                        display:flex; align-items:center; gap:15px; transition: 0.3s; opacity: ${acildiMi ? '1' : '0.8'}">
+                <div style="font-size:28px; filter: ${acildiMi ? 'none' : 'grayscale(1) opacity(0.3)'};">
+                    ${acildiMi ? b.icon : '❓'}
+                </div>
+                <div style="flex:1;">
+                    <h4 style="margin:0; color:${acildiMi ? '#fff' : '#64748b'}; font-size:14px; text-transform:uppercase;">
+                        ${acildiMi ? b.ad : 'KİLİTLİ'}
+                    </h4>
+                    <p style="margin:0; font-size:11px; color:${acildiMi ? '#94a3b8' : '#475569'}; line-height:1.4;">
+                        ${gosterilecekMetin}
+                    </p>
+                    ${acildiMi ? `<div style="color:#10b981; font-size:10px; font-weight:800; margin-top:4px;">TAMAMLANDI +${b.xp} XP</div>` : ''}
+                </div>
+            </div>`;
+    });
+}
+
+function yukle(kat) {
+    suAnkiKat = kat;
+    
+    // Firebase kontrolü: Kullanıcı giriş yapmışsa trend avcısı başarımı işlesin
+    if (kat === 'trendler' && typeof currentUser !== 'undefined' && currentUser) {
+        basarimKazan('trend_avcisi');
+    }
+
+    const ustAlan = document.getElementById('ust-alan');
+    if(ustAlan) ustAlan.style.display = 'flex';
+    
+    const baslik = document.getElementById('baslik');
+    if(!baslik) return;
+
+    let gosterilecekler = [];
+    const tumSesler = Object.values(arsiv).flat();
+
+    if (kat === 'trendler') {
+        baslik.innerText = "DÜNYA GÜNDEMİ 🔥";
+        // Trend verisi Firebase'den veya localden geliyorsa ona göre sırala
+        gosterilecekler = [...tumSesler].sort((a, b) => (trendVerisi[b.id] || 0) - (trendVerisi[a.id] || 0));
+    } else if (kat === 'favoriler') {
+        baslik.innerText = "FAVORİLERİM ★";
+        // Favoriler artık Firebase'den gelen güncel liste olmalı
+        gosterilecekler = tumSesler.filter(item => favoriler.includes(item.id));
+    } else {
+        baslik.innerText = kat.toUpperCase();
+        gosterilecekler = [...(arsiv[kat] || [])];
+    }
+
+    const sortOptions = document.getElementById('sort-options');
+    if (sortOptions) {
+        if (['anime', 'oyun', 'komik', 'favoriler'].includes(kat)) {
+            sortOptions.style.display = 'flex';
+            gosterilecekler.sort((a, b) => a.ad.localeCompare(b.ad));
+        } else {
+            sortOptions.style.display = 'none';
+        }
+    }
+    
+    suAnkiListe = gosterilecekler;
+    
+    // KANKA DİKKAT: listeGuncelle fonksiyonun içinde 
+    // "kesfedilenler.includes(ses.id)" kontrolü yapıldığından emin olmalısın.
+    listeGuncelle(); 
+}
+
+function sirala(tip, element) {
+    if (!suAnkiListe.length) return;
+    document.querySelectorAll('.sort-btn').forEach(b => {
+        b.classList.remove('active');
+        b.style.color = "#94a3b8";
+        b.style.background = "rgba(148, 163, 184, 0.1)";
+    });
+    element.classList.add('active');
+    element.style.color = "#38bdf8";
+    element.style.background = "rgba(56, 189, 248, 0.1)";
+    if (tip === 'alfabetik') {
+        suAnkiListe.sort((a, b) => a.ad.localeCompare(b.ad));
+    } else if (tip === 'populer') {
+        suAnkiListe.sort((a, b) => (trendVerisi[b.id] || 0) - (trendVerisi[a.id] || 0));
+    }
+    listeGuncelle();
+}
+
+function listeGuncelle() {
+    const liste = document.getElementById('liste');
+    if(!liste) return;
+
+    // Boş liste kontrolü
+    if(suAnkiListe.length === 0) {
+        liste.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 50px;">Burada henüz bir şey yok kanka... ☕</p>`;
+        return;
+    }
+
+    // Fragment (Görünmez Kutu) Oluşturma
+    const fragment = document.createDocumentFragment();
+
+    suAnkiListe.forEach((item, index) => {
+        const isFav = favoriler.includes(item.id) ? 'fav-active' : '';
+        const isDiscovered = kesfedilenler.includes(item.id);
+        const tik = trendVerisi[item.id] || 0;
+        
+        let medalHTML = "";
+        if(suAnkiKat === 'trendler' && tik > 0 && index < 3) {
+            const colors = ['gold', 'silver', 'bronze'];
+            medalHTML = `<div class="medal-css ${colors[index]}">${index + 1}</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.setAttribute('data-isim', item.ad.toLowerCase());
+        card.id = `card-${item.id}`;
+        card.style.contentVisibility = 'auto';
+
+        card.innerHTML = `
+            ${medalHTML}
+            <span class="status-label" style="font-size:9px; color:#38bdf8; display:block; margin-bottom:5px;">${isDiscovered ? '✅ Keşfedildi' : '🎁 Keşfedilmedi'}</span>
+            <h4 style="margin:0 0 5px 0; color:#fff; font-weight:600;">${item.ad}</h4>
+            <span class="play-count" id="count-${item.id}">🔥 ${tik} Kez</span>
+            <button class="play-btn" onclick="sesiCal('${item.id}', 'sounds/${item.dosya}')">OYNAT ▶️</button>
+            <div class="actions">
+                <button class="action-btn ${isFav}" onclick="favoriToggle('${item.id}')">⭐<span>Fav</span></button>
+                
+                <button class="action-btn" onclick="paylas('${item.ad}')">🔗<span>Paylaş</span></button>
+                
+                <a href="sounds/${item.dosya}" download="${item.dosya}" class="action-btn">📥<span>İndir</span></a>
+            </div>`;
+        
+        fragment.appendChild(card);
+    });
+
+    // Listeyi temizle ve yeni kartları bas (Opaklık takılması olmadan)
+    liste.innerHTML = '';
+    liste.appendChild(fragment);
+    
+    // UI Güncellemesini yap
+    uiGuncelle();
+}
+
+function sesiCal(id, yol) {
+    // 1. SES GECİKMESİNİ ÖLDÜR (ANINDA TEPKİ)
+    if (typeof aktifSes !== 'undefined' && aktifSes) {
+        aktifSes.pause();
+        aktifSes.onplay = null;
+        aktifSes.ontimeupdate = null;
+        aktifSes.src = ""; 
+        aktifSes.load();
+    }
+
+    // Yeni sesi oluştur ve OYNAT
+    aktifSes = new Audio(yol);
+    aktifSes.play().catch(e => console.log("Hızlı geçiş denendi."));
+
+    // 2. BAŞARIMLAR (Sadece kontrol)
+    if (typeof basarimKazan === "function") {
+        basarimKazan('ilk_adim');
+        const saat = new Date().getHours();
+        if(saat >= 0 && saat < 5) basarimKazan('gece_kusu');
+        if(kesfedilenler.length >= 50) basarimKazan('gurme');
+    }
+
+    let puanVerildi = false;
+    aktifSes.ontimeupdate = () => {
+        if (!aktifSes || !aktifSes.duration) return;
+        
+        let yuzde = (aktifSes.currentTime / aktifSes.duration) * 100;
+        
+        // --- %80 DİNLENİNCE HEM SAYAÇ HEM KEŞİF TETİKLENİR ---
+        if (yuzde > 80 && !puanVerildi) {
+            puanVerildi = true;
+            // Burası hem sayacı artıracak hem de ilk kezse keşif sayacak
+            puanEkleSessiz(id); 
+            console.log("Ses %80 dinlendi, işlemler yapılıyor...");
+        }
+    };
+}
+
+function puanEkleSessiz(id) {
+    if (!id) return; 
+
+    // 1. ADIM: Firebase Sayacını Artır (Trendler için)
+    const countRef = firebase.database().ref('trendler/' + id); // database -> firebase.database() olarak düzeltildi
+    countRef.transaction((currentCount) => {
+        return (currentCount || 0) + 1;
+    });
+
+    // 2. ADIM: Kişisel XP ve Keşif Sistemi (Sadece %80'de burası çalışır)
+    if (!kesfedilenler.includes(id)) {
+        // İLK KEZ KEŞFEDİLİYORSA
+        userXP += 25; 
+        kesfedilenler.push(id);
+        
+        // F5 ATMADAN YAZIYI GÜNCELLE
+        const durumEtiketi = document.querySelector(`#card-${id} .status-label`);
+        if (durumEtiketi) {
+            durumEtiketi.innerText = "✅ Keşfedildi";
+            durumEtiketi.style.color = "#38bdf8"; // Senin istediğin mavi ton
+        }
+        console.log("Yeni ses keşfedildi: " + id);
+    } else {
+        // ZATEN KEŞFEDİLMİŞSE SADECE DİNLEME XP
+        userXP += 10;
+    }
+
+    // Yerel depolamayı ve UI'ı güncelle
+    localStorage.setItem('userXP', userXP);
+    localStorage.setItem('kesfedilenler', JSON.stringify(kesfedilenler));
+    if (typeof uiGuncelle === "function") uiGuncelle();
+
+    // 3. ADIM: FIREBASE ANLIK YEDEKLEME
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        firebase.database().ref('users/' + currentUser).update({
+            xp: userXP,
+            kesfedilenler: kesfedilenler
+        }).then(() => {
+            console.log("Bulut senkronizasyonu tamam! 🔥");
+        }).catch((e) => {
+            console.error("Yedekleme hatası:", e);
+        });
+    }
+}
+
+function uiGuncelle() {
+    if(userXP >= 5000) basarimKazan('sadik_dost');
+    try {
+        const rutbelerUI = [
+            { ad: "Çaylak Oruçlu 🥚", xp: 0 },
+            { ad: "Ses Meraklısı 🎧", xp: 200 },
+            { ad: "Bronz Kulak 🥉", xp: 500 },
+            { ad: "Gümüş Dinleyici 🥈", xp: 1000 },
+            { ad: "Altın Plak 🥇", xp: 2000 },
+            { ad: "Ritim Üstadı 🥁", xp: 3500 },
+            { ad: "Ses Mühendisi 👨‍💻", xp: 5000 },
+            { ad: "Meme Muhtarı 🏠", xp: 7500 },
+            { ad: "Efsanevi Kulak 🏆", xp: 10000 },
+            { ad: "İftarın Efendisi 👑", xp: 15000 }
+        ];
+
+        let suanki = rutbelerUI[0];
+        let siradaki = rutbelerUI[1];
+
+        // Normal XP hesaplaması
+        for (let i = 0; i < rutbelerUI.length; i++) {
+            if (userXP >= rutbelerUI[i].xp) {
+                suanki = rutbelerUI[i];
+                siradaki = rutbelerUI[i + 1] || { ad: "MAX", xp: userXP };
+            }
+        }
+
+        const rName = document.getElementById('rankName');
+        const xText = document.getElementById('xpText');
+        const xBar = document.getElementById('xpBarFill');
+
+        if (rName) {
+            // --- KURUCU VE ÖZEL RÜTBE KONTROLÜ ---
+            if (currentUser === 'sayhann') {
+                // Sen kurucusun, XP'ye bakma, hedef gösterme
+                rName.innerHTML = `<span style="color:#facc15; font-weight:900; text-shadow: 0 0 10px rgba(250,204,21,0.5);">Kurucu 👑</span>`;
+            } else if (typeof userOzelRutbe !== 'undefined' && userOzelRutbe) {
+                // Eğer admin panelinden başkasına rütbe verdiysen o gözükür
+                rName.innerHTML = `<span style="color:#38bdf8; font-weight:bold;">${userOzelRutbe}</span>`;
+            } else {
+                // Normal kullanıcılar için standart görünüm
+                rName.innerHTML = `${suanki.ad} <br> <span style="font-size:8px; opacity:0.6; text-transform:none;">Hedef: ${siradaki.ad}</span>`;
+            }
+        }
+
+        if (xText) xText.innerText = userXP + " XP";
+        
+        if (xBar) {
+            // Sen kurucuysan bar hep dolu görünebilir veya normal ilerleyebilir, 
+            // ama aşağıdaki hesaplama genel kullanıcılar için düzgün çalışmaya devam eder.
+            let yuzde = (userXP / siradaki.xp) * 100;
+            xBar.style.width = Math.min(yuzde, 100) + "%";
+        }
+    } catch (e) { console.log("Hata:", e); }
+}
+
+function kurallariGoster() {
+    // Eski alert(kurallarMetni) kısmını iptal ettik kanka.
+    // Artık HTML'e eklediğimiz o havalı modalı (pencereyi) açıyoruz.
+    
+    const modal = document.getElementById('info-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        console.log("Sistem kuralları ve rütbe uyarısı ekrana basıldı kanka! 😎");
+    } else {
+        // Eğer modalı henüz HTML'e eklemediysen yedek olarak eski sistemi çalıştırır (hata vermez)
+        const kurallarMetni = `📜 MEME HUB XP SİSTEMİ 📜\n\n✨ Yeni Keşif: +25 XP\n🎧 Tekrar Dinleme: +10 XP\n🤡 Deli Oyunu: +15 XP\n🏆 Başarımlar: Ekstra XP kazandırır!\n🚀 Hedef: İFTARIN EFENDİSİ!\n\n⚠️ NOT: XP ve aktifliğe göre özel rütbeler verilecektir!`;
+        alert(kurallarMetni);
+    }
+}
+
+function oyunuBaslat() {
+    if (aktifSes) { aktifSes.pause(); aktifSes.currentTime = 0; }
+    const ustAlan = document.getElementById('ust-alan');
+    if(ustAlan) ustAlan.style.display = 'none';
+    const liste = document.getElementById('liste'), baslik = document.getElementById('baslik');
+    baslik.innerText = "BİLEMEZSEN AYIP 💀";
+    const sortOptions = document.getElementById('sort-options');
+    if(sortOptions) sortOptions.style.display = 'none';
+    const tumSesler = Object.values(arsiv).flat();
+    const dogru = tumSesler[Math.floor(Math.random() * tumSesler.length)];
+    let siklar = [dogru];
+    while(siklar.length < 4) {
+        let r = tumSesler[Math.floor(Math.random() * tumSesler.length)];
+        if(!siklar.find(s => s.id === r.id)) siklar.push(r);
+    }
+    siklar.sort(() => Math.random() - 0.5);
+    liste.innerHTML = `
+        <div class="quiz-container" id="game-box" style="grid-column: 1/-1;">
+            <h1>👽</h1>
+            <p style="font-weight:600;">Bu ses kime ait?</p>
+            <button class="play-btn" style="width:80px;height:80px;border-radius:50%;margin-bottom:20px; font-size:24px;" onclick="sesiCal('${dogru.id}','sounds/${dogru.dosya}')">🔊</button>
+            <div id="options">
+                ${siklar.map(s => `<button class="option-btn" onclick="cevapKontrol(this, '${s.id}', '${dogru.id}')">${s.ad}</button>`).join('')}
+            </div>
+        </div>`;
+}
+
+function cevapKontrol(btn, sId, dId) {
+    if(sId === dId) { 
+        btn.style.background='#10b981'; btn.style.color='#fff';
+        userXP += 15;
+        oyunDogruSayisi++;
+        if(oyunDogruSayisi >= 10) basarimKazan('quiz_canavari');
+        localStorage.setItem('userXP', userXP);
+        uiGuncelle();
+        setTimeout(oyunuBaslat, 800); 
+    } else { 
+        const box = document.getElementById('game-box');
+        if(box) box.classList.add('shake');
+        btn.style.background='#ef4444'; btn.style.color='#fff';
+        setTimeout(() => { if(box) box.classList.remove('shake'); }, 500); 
+    }
+}
+
+function favoriToggle(id) {
+    const index = favoriler.indexOf(id);
+    if (index > -1) {
+        favoriler.splice(index, 1);
+    } else {
+        favoriler.push(id);
+    }
+    
+    // Başarım kontrolü
+    if(favoriler.length >= 5 && typeof basarimKazan === "function") basarimKazan('fav_master');
+    
+    // 1. Yerel Depolama (Tarayıcı hafızası)
+    localStorage.setItem('favList', JSON.stringify(favoriler));
+
+    // --- YENİ: FIREBASE BULUT YEDEKLEME ---
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        firebase.database().ref('users/' + currentUser + '/favoriler').set(favoriler)
+            .then(() => console.log("Favoriler buluta uçuruldu 🚀"))
+            .catch((hata) => console.error("Yedekleme hatası:", hata));
+    }
+    // --------------------------------------
+
+    if(suAnkiKat === 'favoriler') {
+        yukle('favoriler');
+    } else {
+        const card = document.getElementById(`card-${id}`);
+        if(card) {
+            const favBtn = card.querySelector('.action-btn');
+            if(favBtn) favBtn.classList.toggle('fav-active');
+        }
+    }
+}
+
+function filtrele() {
+    let k = document.getElementById('ara').value.toLowerCase();
+    const kartlar = document.querySelectorAll('.card');
+    kartlar.forEach(c => {
+        const eslesme = c.getAttribute('data-isim').includes(k);
+        c.style.display = eslesme ? 'block' : 'none';
+    });
+}
+
+function rastgeleCal() { 
+    const tum = Object.values(arsiv).flat(); 
+    const r = tum[Math.floor(Math.random() * tum.length)]; 
+    sesiCal(r.id, 'sounds/' + r.dosya); 
+}
+
+function paylas(ad) { 
+    // Başarım sistemin çalışmaya devam etsin
+    if (typeof basarimKazan === "function") {
+        basarimKazan('sosyal_kelebek');
+    }
+    
+    // Sitenin linkini al ve sonuna #Sesİsmi ekle
+    const anaLink = window.location.origin + window.location.pathname;
+    const ozelLink = anaLink + "#" + encodeURIComponent(ad);
+
+    // MOBİL PAYLAŞIM VE KOPYALAMA SİSTEMİ
+    if (navigator.share) {
+        // Eğer telefon/tablet ise direkt paylaşım menüsü açılsın
+        navigator.share({
+            title: 'Meme Hub',
+            text: `Şu sese bir baksana kanka: ${ad}`,
+            url: ozelLink
+        }).catch(() => {
+            // Paylaşım iptal edilirse veya hata verirse kopyalamaya düşsün
+            navigator.clipboard.writeText(ozelLink).then(() => alert("Link kopyalandı kankaa! 😎"));
+        });
+    } else {
+        // Bilgisayardaysa direkt kopyala
+        navigator.clipboard.writeText(ozelLink).then(() => {
+            alert("Link kopyalandı kankaa! 😎");
+        });
+    }
+}
+
+function gizliTikla() { 
+    logoTiklama++; 
+    if(logoTiklama === 3) basarimKazan('kasif'); 
+}
+
+function temaListesiToggle() {
+    const menu = document.getElementById('tema-menu');
+    if (!menu) return;
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function temaSec(tema) {
+    const root = document.documentElement.style;
+    const body = document.body.style;
+    const sidebar = document.querySelector('.sidebar')?.style;
+    const baslik = document.getElementById('baslik');
+    const logo = document.getElementById('logo');
+    const menu = document.getElementById('tema-menu');
+    
+    if(menu) menu.style.display = 'none';
+    localStorage.setItem('selectedTheme', tema);
+    body.fontFamily = "'Inter', sans-serif";
+    if(sidebar) sidebar.borderRight = "1px solid rgba(255,255,255,0.1)";
+
+    switch(tema) {
+        case 'ramazan':
+            body.backgroundColor = "#04140a";
+            body.backgroundImage = "radial-gradient(circle at 50% 50%, #06220f 0%, #04140a 100%)";
+            if(sidebar) { sidebar.backgroundColor = "rgba(5, 30, 15, 0.95)"; sidebar.borderRight = "2px solid #fbbf24"; }
+            body.fontFamily = "'Georgia', serif"; 
+            root.setProperty('--vurgu-rengi', '#fbbf24');
+            if(logo) { logo.innerText = "Mubarek Hub 🌙"; logo.style.color = "#fbbf24"; }
+            if(baslik) { baslik.innerText = suAnkiKat === 'trendler' ? "DÜNYA GÜNDEMİ 🔥" : "HAYIRLI DİNLEMELER 🤲"; baslik.style.color = "#fbbf24"; }
+            break;
+        case 'ocean':
+            body.backgroundColor = "#020617";
+            body.backgroundImage = "linear-gradient(180deg, #0f172a 0%, #020617 100%)";
+            if(sidebar) { sidebar.backgroundColor = "rgba(7, 15, 35, 0.95)"; sidebar.borderRight = "2px solid #0ea5e9"; }
+            root.setProperty('--vurgu-rengi', '#0ea5e9');
+            if(logo) { logo.innerText = "Ocean Hub 🌊"; logo.style.color = "#0ea5e9"; }
+            if(baslik) { baslik.innerText = suAnkiKat === 'trendler' ? "DÜNYA GÜNDEMİ 🔥" : "DERİNLERDEN GELENLER"; baslik.style.color = "#7dd3fc"; }
+            break;
+        case 'forest':
+            body.backgroundColor = "#022c22";
+            body.backgroundImage = "radial-gradient(circle at 50% 50%, #064e3b 0%, #022c22 100%)";
+            if(sidebar) { sidebar.backgroundColor = "rgba(2, 44, 34, 0.95)"; sidebar.borderRight = "2px solid #22c55e"; }
+            root.setProperty('--vurgu-rengi', '#22c55e');
+            if(logo) { logo.innerText = "Jungle Hub 🌿"; logo.style.color = "#4ade80"; }
+            if(baslik) { baslik.innerText = suAnkiKat === 'trendler' ? "DÜNYA GÜNDEMİ 🔥" : "VAHŞİ ARŞİV"; baslik.style.color = "#86efac"; }
+            break;
+        case 'cyber':
+            body.backgroundColor = "#0d0221";
+            body.backgroundImage = "radial-gradient(circle at 50% 50%, #1a0833 0%, #0d0221 100%)";
+            if(sidebar) { sidebar.backgroundColor = "rgba(26, 8, 51, 0.95)"; sidebar.borderRight = "2px solid #f0abfc"; }
+            root.setProperty('--vurgu-rengi', '#f0abfc');
+            if(logo) { logo.innerText = "Cyber Hub ⚡"; logo.style.color = "#f0abfc"; }
+            if(baslik) { baslik.innerText = suAnkiKat === 'trendler' ? "DÜNYA GÜNDEMİ 🔥" : "NEON DÜNYASI"; baslik.style.color = "#f0abfc"; }
+            break;
+        default:
+            body.backgroundColor = "#0f172a";
+            body.backgroundImage = "radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%)";
+            if(sidebar) { sidebar.backgroundColor = "rgba(15, 23, 42, 0.95)"; sidebar.borderRight = "1px solid rgba(56, 189, 248, 0.2)"; }
+            root.setProperty('--vurgu-rengi', '#38bdf8');
+            if(logo) { logo.innerText = "MEME HUB"; logo.style.color = "#e94560"; }
+            if(baslik) { baslik.innerText = suAnkiKat === 'trendler' ? "DÜNYA GÜNDEMİ 🔥" : "SESLER"; baslik.style.color = "#e94560"; }
+    }
+}
+
+// FORM KONTROL SİSTEMİ
+document.addEventListener("DOMContentLoaded", function() {
+    const formConfig = [
+        { id: "my-form", key: "lastReq", msg: "İsteğin alındı kanka! ✅" },
+        { id: "copyright-form", key: "lastCopy", msg: "Telif bildirimi iletildi. ✅" }
+    ];
+
+    formConfig.forEach(item => {
+        const form = document.getElementById(item.id);
+        if (!form) return;
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const btn = form.querySelector('button');
+            const lastTime = localStorage.getItem(item.key);
+            const now = Date.now();
+            if (lastTime && (now - lastTime < 30000)) {
+                alert(`Yavaş kanka! ⏳`);
+                return;
+            }
+            btn.disabled = true;
+            btn.innerText = "GÖNDERİLİYOR...";
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    localStorage.setItem(item.key, Date.now());
+                    alert(item.msg);
+                    form.reset();
+                    if (item.id === "copyright-form") document.getElementById('copyright-modal').style.display = 'none';
+                    if (item.id === "my-form") basarimKazan('hacker');
+                    btn.innerText = "İLETİLDİ ✅";
+                }
+            } catch (err) { alert("Bağlantı hatası!"); }
+            finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = (item.id === "my-form") ? "İSTEK GÖNDER" : "BİLDİRİMİ GÖNDER";
+                }, 3000);
+            }
+        };
+    });
+});
+
+const yasalMetinler = {
+    hakkimizda: `
+        <h2 style="color:#38bdf8; margin-top:0;">👽 Hakkımızda</h2>
+        <p style="color:#94a3b8; font-size:13px; line-height:1.6;">
+            <b>Meme Hub</b>, 2026 yılında internet kültürünün en efsane seslerini bir araya getirmek için kuruldu. <br><br>
+            SayhanN tarafından geliştirilen bu platform, tamamen eğlence ve topluluk odaklıdır. XP kasarak rütbeni artırabilir, en sevdiğin sesleri favorileyebilirsin.
+        </p>
+    `,
+    gizlilik: `
+        <h2 style="color:#38bdf8; margin-top:0;">🛡️ Gizlilik</h2>
+        <p style="color:#94a3b8; font-size:13px; line-height:1.6;">
+            • Verilerin (XP, Favoriler) sadece senin cihazında (LocalStorage) saklanır.<br>
+            • Firebase üzerinde sadece seslerin toplam tıklanma sayıları anonim olarak tutulur.<br>
+            • Üçüncü şahıslara veri satışı veya takibi yapılmaz.
+        </p>
+    `,
+    kullanim: `
+        <h2 style="color:#38bdf8; margin-top:0;">⚖️ Kullanım Şartları</h2>
+        <p style="color:#94a3b8; font-size:13px; line-height:1.6;">
+            • Sitedeki sesler eğlence amaçlıdır ve internetten derlenmiştir.<br>
+            • Kullanıcıların yaptığı ses seçimlerinden site sorumlu değildir.<br>
+            • Hak ihlali olduğunu düşündüğün içerikleri lütfen Telif Bildirimi kısmından bize ilet.
+        </p>
+    `,
+    iletisim: `
+        <h2 style="color:#38bdf8; margin-top:0;">🤝 İş Birliği & İletişim</h2>
+        <p style="color:#94a3b8; font-size:13px; line-height:1.6;">
+            <b>Meme Hub</b> ailesi olarak her türlü geri bildirime açığız. Bizimle aşağıdaki konularda iletişime geçebilirsiniz:
+            <br><br>
+            • <b>İş Birliği:</b> Reklam, sponsorluk veya proje ortaklığı teklifleri için,<br>
+            • <b>Hata Bildirimi:</b> Sitede çalışmayan bir buton, ses veya teknik bir sorun fark ettiyseniz bizimle paylaşabilirsiniz.
+            <br><br>
+            <b>E-Posta:</b> <span style="color:#38bdf8;">sayhan1940@gmail.com</span><br>
+            <i style="font-size:11px; opacity:0.7;">Mesajlarınıza en kısa sürede (genellikle 24-48 saat içinde) yanıt verilecektir.</i>
+        </p>
+    `
+};
+
+function yasalModalAc(tip) {
+    document.getElementById('yasal-icerik-alanı').innerHTML = yasalMetinler[tip];
+    document.getElementById('yasal-bilgi-modal').style.display = 'flex';
+}
+
+// Modal dışına tıklayınca kapansın
+window.addEventListener('click', function(e) {
+    if (e.target.id === 'yasal-bilgi-modal') {
+        document.getElementById('yasal-bilgi-modal').style.display = 'none';
+    }
+});
+
+
+// --- ÇEREZ SİSTEMİ FONKSİYONLARI ---
+
+function cerezKontrol() {
+    // Daha önce onay verilip verilmediğine bakıyoruz
+    const onay = localStorage.getItem('memeHubCerezOnay');
+    
+    // Eğer onay yoksa, uyarının çıkmasını sağlıyoruz
+    if (!onay) {
+        // Küçük bir gecikmeyle (2 sn) gelirse daha şık durur
+        setTimeout(() => {
+            const cerezBar = document.getElementById('cerez-onay');
+            if (cerezBar) {
+                cerezBar.style.display = 'flex';
+            }
+        }, 2000);
+    }
+}
+
+function cerezKabulEt() {
+    // Yerel depolamaya onayı kaydediyoruz (Sonsuza kadar hatırlar)
+    localStorage.setItem('memeHubCerezOnay', 'true');
+    
+    // Barı kapatıyoruz
+    const cerezBar = document.getElementById('cerez-onay');
+    if (cerezBar) {
+        cerezBar.style.display = 'none';
+    }
+}
+
+// --- AUTH (GİRİŞ/KAYIT) FONKSİYONLARI ---
+
+// 1. Giriş ve Kayıt Modu Arasında Geçiş Yapar
+function toggleAuthMode() {
+    isLoginMode = !isLoginMode;
+    const title = document.getElementById('auth-modal-title');
+    const mainBtn = document.getElementById('auth-main-btn');
+    const switchLink = document.getElementById('auth-switch-text');
+    const infoText = document.getElementById('auth-info');
+    const errorArea = document.getElementById('auth-error');
+
+    if (errorArea) errorArea.style.display = "none";
+
+    if (isLoginMode) {
+        title.innerText = "Giriş Yap";
+        mainBtn.innerText = "GİRİŞ YAP";
+        infoText.innerText = "Hesabına bağlan ve XP'lerini senkronize et!";
+        switchLink.innerHTML = 'Hesabın yok mu? <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color:#38bdf8; text-decoration:none; font-weight:bold;">Kayıt Ol</a>';
+    } else {
+        title.innerText = "Yeni Hesap Aç";
+        mainBtn.innerText = "KAYIT OL VE BAŞLA";
+        infoText.innerText = "Meme Hub dünyasına katıl, rütbeni yükselt!";
+        switchLink.innerHTML = 'Zaten hesabın var mı? <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color:#38bdf8; text-decoration:none; font-weight:bold;">Giriş Yap</a>';
+    }
+}
+
+// 2. Şifre Güvenlik Kontrolü
+function validatePassword(pass) {
+    const hasNumber = /\d/.test(pass);
+    const isLongEnough = pass.length >= 6;
+    return hasNumber && isLongEnough;
+}
+
+// 3. ANA İŞLEM (Gerçek Firebase Bağlantısı)
+async function handleAuthSubmit() {
+    const user = document.getElementById('auth-username').value.trim();
+    const pass = document.getElementById('auth-password').value;
+    const errorArea = document.getElementById('auth-error');
+    
+    if (errorArea) errorArea.style.display = "none";
+
+    if (!user || !pass) {
+        showAuthError("Kanka alanları boş bırakma!");
+        return;
+    }
+
+    if (!validatePassword(pass)) {
+        showAuthError("Şifre en az 6 karakter ve 1 sayı içermeli!");
+        return;
+    }
+
+    const userID = user.toLowerCase(); 
+    const fakeEmail = `${userID}@memehub.com`;
+
+    try {
+        if (isLoginMode) {
+            await firebase.auth().signInWithEmailAndPassword(fakeEmail, pass);
+            console.log("Giriş başarılı!");
+            basariylaGirisYapildi(userID); 
+        } else {
+            await firebase.auth().createUserWithEmailAndPassword(fakeEmail, pass);
+            
+            // YENİ KAYIT: Başarımları da başlangıçta boş dizi olarak ekliyoruz
+            await firebase.database().ref('users/' + userID).set({
+                username: user,
+                xp: userXP, 
+                favoriler: favoriler,
+                kesfedilenler: kesfedilenler,
+                achievements: [], // Başarımlar klasörü açıldı
+                role: userID === 'sayhann' ? 'admin' : 'user',
+                ozelRutbe: userID === 'sayhann' ? 'Kurucu' : null,
+                kayitTarihi: new Date().toISOString()
+            });
+            console.log("Yeni hesap oluşturuldu!");
+            basariylaGirisYapildi(userID);
+        }
+
+    } catch (error) {
+        let mesaj = "Bir hata oluştu!";
+        switch (error.code) {
+            case 'auth/user-not-found': mesaj = "Böyle bir kullanıcı yok kanka."; break;
+            case 'auth/wrong-password': mesaj = "Şifre yanlış kanka, tekrar dene."; break;
+            case 'auth/email-already-in-use': mesaj = "Kanka bu kullanıcı adı zaten var!"; break;
+            case 'auth/invalid-email': mesaj = "Geçersiz karakter var."; break;
+            default: mesaj = error.message; 
+        }
+        showAuthError(mesaj);
+    }
+}
+
+async function basariylaGirisYapildi(username) {
+    currentUser = username;
+    localStorage.setItem('username', username);
+    
+    document.getElementById('auth-modal').style.display = 'none';
+    
+    try {
+        const snapshot = await firebase.database().ref('users/' + username).once('value');
+        const userData = snapshot.val();
+
+        if (userData) {
+            userXP = userData.xp || 0;
+            localStorage.setItem('userXP', userXP);
+            
+            favoriler = userData.favoriler || [];
+            localStorage.setItem('favList', JSON.stringify(favoriler));
+
+            kesfedilenler = userData.kesfedilenler || [];
+            localStorage.setItem('kesfedilenler', JSON.stringify(kesfedilenler));
+
+            acilanBasarimlar = userData.achievements || [];
+            localStorage.setItem('achievements', JSON.stringify(acilanBasarimlar));
+
+            userOzelRutbe = userData.ozelRutbe || null;
+
+            console.log("Kanka tüm verilerin buluttan çekildi! 🚀");
+            
+            // --- KRİTİK EKLEME: F5 ATMADAN LİSTEYİ YENİLE ---
+            // Veriler geldiği an ekrandaki kartları tekrar tarayıp keşifleri işaretler
+            if (typeof listeGuncelle === "function") {
+                listeGuncelle(); 
+            }
+        }
+    } catch (error) {
+        console.error("Veri çekilirken hata oluştu:", error);
+    }
+
+    if (typeof uiGuncelle === "function") uiGuncelle();
+    if (typeof rütbeKontrol === "function") rütbeKontrol(); 
+    
+    const authArea = document.getElementById('auth-status-area');
+    if (authArea) {
+        let adminButtonHtml = "";
+        if (username.toLowerCase() === 'sayhann') {
+            adminButtonHtml = `<button onclick="adminPaneliAc()" style="background: linear-gradient(45deg, #facc15, #eab308); color: #000; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 11px; margin-right: 5px;">👑 YÖNETİM</button>`;
+        }
+
+        authArea.innerHTML = `
+            <div style="display:flex; align-items:center; gap:8px; background:rgba(56, 189, 248, 0.1); padding:5px 10px; border-radius:8px; border:1px solid #38bdf8;">
+                ${adminButtonHtml}
+                <span style="color:#38bdf8; font-size:11px; font-weight:800; text-transform:uppercase;">👤 ${username}</span>
+                <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:14px; font-weight:bold; padding:0 5px;">✕</button>
+            </div>
+        `;
+    }
+}
+
+function logout() {
+    // --- TEMİZLİK OPERASYONU ---
+    // 1. Temel kullanıcı verilerini siliyoruz
+    localStorage.removeItem('username');
+    localStorage.removeItem('achievements');
+    localStorage.removeItem('userXP');
+    
+    // 2. KRİTİK: Favorileri ve keşfedilen sesleri de siliyoruz kanka (Sorun buradaydı)
+    localStorage.removeItem('favList'); 
+    localStorage.removeItem('kesfedilenler');
+    
+    // 3. Kodun içindeki aktif listeleri de sıfırlayalım (Garantiye alıyoruz)
+    favoriler = [];
+    acilanBasarimlar = [];
+    userXP = 0;
+    kesfedilenler = [];
+
+    // --- FIREBASE ÇIKIŞ ---
+    firebase.auth().signOut().then(() => {
+        console.log("Kanka tüm kalıntılar temizlendi, çıkış yapıldı! 😎");
+        // Sayfayı yenile ki her şey "Misafir" modunda sıfırdan başlasın
+        location.reload();
+    }).catch((error) => {
+        console.error("Çıkış yaparken bir sorun çıktı:", error);
+    });
+}
+
+function showAuthError(msg) {
+    const errorArea = document.getElementById('auth-error');
+    if (errorArea) {
+        errorArea.innerText = msg;
+        errorArea.style.display = "block";
+    }
+}
+
+function aktiflikTakibiBaslat(user) {
+    if (!user) return;
+    const uid = user.email.split('@')[0].replace(/\./g, "_"); // Firebase uyumlu ID
+
+    if (aktiflikInterval) clearInterval(aktiflikInterval);
+
+    aktiflikInterval = setInterval(() => {
+        const userRef = firebase.database().ref('users/' + uid + '/sureDakika');
+        userRef.transaction((mevcut) => (mevcut || 0) + 1);
+        console.log("Aktiflik: +1 dakika eklendi.");
+    }, 60000); // 60 saniyede bir
+}
+
+// --- 👑 ADMIN PANELİ MODÜLÜ ---
+
+async function adminPaneliAc() {
+    // Çifte Güvenlik Kontrolü
+    if (typeof currentUser === 'undefined' || currentUser.toLowerCase() !== 'sayhann') {
+        alert("Yetkisiz Erişim! Bu alan sadece Kurucu'ya özeldir. ⛔");
+        return;
+    }
+
+    if (document.getElementById('admin-modal')) return;
+
+    const modalHtml = `
+    <div id="admin-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2, 6, 23, 0.95); z-index:99999; display:flex; align-items:center; justify-content:center; backdrop-filter: blur(8px); padding: 15px;">
+        <div style="background:#1e293b; border:2px solid #facc15; padding:25px; border-radius:24px; width:450px; max-width:100%; position:relative; box-shadow: 0 0 50px rgba(250, 204, 21, 0.2); border: 1px solid rgba(250, 204, 21, 0.4); max-height: 90vh; overflow-y: auto;">
+            
+            <span onclick="document.getElementById('admin-modal').remove()" style="position:absolute; top:20px; right:20px; color:#94a3b8; cursor:pointer; font-size:20px; font-weight:bold;">✕</span>
+            
+            <div style="text-align:center; margin-bottom:20px;">
+                <h2 style="color:#facc15; margin:0; font-size:22px; letter-spacing:1px; font-family:sans-serif;">👑 KURUCU PANELİ</h2>
+                <p style="color:#94a3b8; font-size:11px; margin-bottom:10px;">Kullanıcı Listesi & Yetki & XP Sistemi</p>
+                
+                <div style="display:inline-block; background:rgba(16, 185, 129, 0.1); border:1px solid rgba(16, 185, 129, 0.3); padding:4px 12px; border-radius:20px;">
+                    <span id="online-count" style="color:#10b981; font-size:11px; font-weight:bold; font-family:monospace;">🟢 Sayılıyor...</span>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; background: rgba(15, 23, 42, 0.5); padding: 15px; border-radius: 15px; margin-bottom: 20px;">
+                <div>
+                    <label style="color:#e2e8f0; font-size:10px; font-weight:bold; margin-bottom:5px; display:block; text-transform:uppercase;">Hedef Kullanıcı (Küçük Harf)</label>
+                    <input type="text" id="target-user" placeholder="Örn: mehmet12" style="width:100%; padding:10px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#facc15; outline:none; font-weight:bold; box-sizing: border-box;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label style="color:#e2e8f0; font-size:10px; font-weight:bold; margin-bottom:5px; display:block; text-transform:uppercase;">Yeni Rütbe</label>
+                        <input type="text" id="target-rank" placeholder="VIP, MOD..." style="width:100%; padding:10px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:white; outline:none; box-sizing: border-box;">
+                    </div>
+                    <div style="width: 100px;">
+                        <label style="color:#10b981; font-size:10px; font-weight:bold; margin-bottom:5px; display:block; text-transform:uppercase;">+ XP Hediye</label>
+                        <input type="number" id="target-xp-gift" placeholder="500" style="width:100%; padding:10px; border-radius:10px; border:1px solid #334155; background:#0f172a; color:#10b981; outline:none; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <button onclick="adminYetkiVer()" style="width:100%; padding:12px; background:#facc15; color:#000; border:none; border-radius:12px; font-weight:900; cursor:pointer; transition:all 0.2s; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.2);">
+                    DEĞİŞİKLİKLERİ UYGULA 🔥
+                </button>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.5); padding: 15px; border-radius: 15px; border: 1px solid rgba(56, 189, 248, 0.2);">
+                <h3 style="color:#38bdf8; font-size:12px; margin: 0 0 10px 0; display:flex; justify-content:space-between;">
+                    📊 KULLANICI LİSTESİ <span id="admin-user-count" style="font-size:10px; opacity:0.7;">Yükleniyor...</span>
+                </h3>
+                <div id="admin-user-list-area" style="max-height: 180px; overflow-y: auto; font-family: monospace; font-size: 11px; color: #94a3b8;">
+                    Veriler çekiliyor...
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    kullaniciListesiniGetir();
+
+    // 🚀 ANLIK TETİKLEYİCİ: Panel açılır açılmaz veritabanına bir bak diyoruz.
+    if (typeof onlineSayacRef !== 'undefined') {
+        onlineSayacRef.once('value', (snap) => {
+            const count = snap.numChildren() || 0;
+            const el = document.getElementById('online-count');
+            if (el) el.innerText = `🟢 ${count} Kişi Çevrimiçi`;
+        });
+    }
+}
+
+async function adminYetkiVer() {
+    const target = document.getElementById('target-user').value.toLowerCase().trim();
+    const rank = document.getElementById('target-rank').value.trim();
+    const xpGift = parseInt(document.getElementById('target-xp-gift').value);
+
+    if (!target) { alert("Kullanıcı adını yazmadın kanka!"); return; }
+
+    try {
+        const userRef = firebase.database().ref('users/' + target);
+        const snapshot = await userRef.once('value');
+        const userData = snapshot.val();
+
+        if (!userData) { alert("Kullanıcı bulunamadı!"); return; }
+
+        let updateData = {};
+        if (rank) updateData.ozelRutbe = rank;
+        if (!isNaN(xpGift)) {
+            updateData.xp = (userData.xp || 0) + xpGift;
+            if (target === currentUser.toLowerCase()) {
+                userXP = updateData.xp;
+                localStorage.setItem('userXP', userXP);
+            }
+        }
+
+        await userRef.update(updateData);
+        alert(`${target} için işlem tamam! ✅`);
+        if (typeof uiGuncelle === "function") uiGuncelle();
+        kullaniciListesiniGetir();
+    } catch (error) { alert("Hata!"); }
+}
+
+async function kullaniciListesiniGetir(sirala = 'xp') {
+    const listArea = document.getElementById('admin-user-list-area');
+    const countArea = document.getElementById('admin-user-count');
+    
+    if (!listArea) return;
+
+    // --- 🏆 RÜTBE HESAPLAMA SİSTEMİ (Senin Listen) ---
+    function getSistemRutbesi(xp) {
+        const rutbeler = [
+            { ad: "İftarın Efendisi 👑", xp: 15000 },
+            { ad: "Efsanevi Kulak 🏆", xp: 10000 },
+            { ad: "Meme Muhtarı 🏠", xp: 7500 },
+            { ad: "Ses Mühendisi 👨‍💻", xp: 5000 },
+            { ad: "Ritim Üstadı 🥁", xp: 3500 },
+            { ad: "Altın Plak 🥇", xp: 2000 },
+            { ad: "Gümüş Dinleyici 🥈", xp: 1000 },
+            { ad: "Bronz Kulak 🥉", xp: 500 },
+            { ad: "Ses Meraklısı 🎧", xp: 200 },
+            { ad: "Çaylak Oruçlu 🥚", xp: 0 }
+        ];
+        // XP'ye uyan en yüksek rütbeyi bulur
+        const uygunRutbe = rutbeler.find(r => xp >= r.xp);
+        return uygunRutbe ? uygunRutbe.ad : "Çaylak Oruçlu 🥚";
+    }
+
+    // 1. CANLI DİNLEME (.on): Birine XP veya Rank verdiğinde tablo anında yenilenir
+    firebase.database().ref('users').on('value', (snapshot) => {
+        const users = snapshot.val();
+        if (!users) {
+            listArea.innerHTML = "Henüz kullanıcı yok kanka.";
+            return;
+        }
+
+        let userArray = [];
+        for (let u in users) {
+            userArray.push({ id: u, ...users[u] });
+        }
+
+        // 2. SIRALAMA MANTIĞI
+        userArray.sort((a, b) => {
+            if (a.id.toLowerCase() === 'sayhann') return -1;
+            if (b.id.toLowerCase() === 'sayhann') return 1;
+
+            if (sirala === 'xp') {
+                return (b.xp || 0) - (a.xp || 0);
+            } else if (sirala === 'sure') {
+                return (b.sureDakika || 0) - (a.sureDakika || 0);
+            }
+            return 0;
+        });
+
+        // 3. TABLO TASARIMI
+        let html = '<table style="width:100%; text-align:left; border-collapse:collapse; font-size:11px;">';
+        html += `
+            <tr style="color:#94a3b8; font-size:9px; text-transform:uppercase; background:rgba(255,255,255,0.05); position:sticky; top:0; z-index:10;">
+                <th style="padding:8px 5px;">User</th>
+                <th onclick="kullaniciListesiniGetir('xp')" style="color:#10b981; padding:8px 5px; cursor:pointer;">XP ↕</th>
+                <th onclick="kullaniciListesiniGetir('sure')" style="color:#38bdf8; padding:8px 5px; cursor:pointer;">Süre ↕</th>
+                <th style="color:#facc15; padding:8px 5px;">Rank</th>
+            </tr>`;
+
+        let count = 0;
+        userArray.forEach(user => {
+            count++;
+            const totalXp = user.xp || 0;
+            const totalDk = user.sureDakika || 0;
+            const sa = Math.floor(totalDk / 60);
+            const dk = totalDk % 60;
+            const sureMetni = sa > 0 ? `${sa}s ${dk}d` : `${dk}dk`;
+
+            // 🔥 RÜTBE MANTIĞI: Özel atanmış rank varsa o, yoksa XP'ye göre otomatik rütbe
+            const gosterilecekRank = user.rank || user.ozelRutbe || user.rutbe || getSistemRutbesi(totalXp);
+
+            const ozelStil = user.id.toLowerCase() === 'sayhann' ? 'background:rgba(250, 204, 21, 0.1);' : '';
+
+            html += `
+            <tr style="border-bottom:1px solid #334155; ${ozelStil} transition: background 0.3s;">
+                <td style="color:#38bdf8; padding:8px 5px; font-weight:bold;">${user.id}</td>
+                <td style="color:#10b981;">${totalXp}</td>
+                <td style="color:#e2e8f0;">${sureMetni}</td>
+                <td style="color:#facc15; font-weight:bold;">
+                    <span style="background:rgba(250, 204, 21, 0.05); padding:2px 5px; border-radius:4px; border: 1px solid rgba(250, 204, 21, 0.1);">
+                        ${gosterilecekRank}
+                    </span>
+                </td>
+            </tr>`;
+        });
+
+        html += '</table>';
+        listArea.innerHTML = html;
+        if (countArea) countArea.innerText = count + " Kişi";
+    }, (error) => {
+        console.error("Veri çekilemedi:", error);
+        listArea.innerText = "Yüklenemedi kanka.";
+    });
+}
+
+// --- MODAL & FORM KONTROLLERİ ---
+function istekModaliAc() {
+    if (istekBeklemede) { alert("Sakin kanka, 30sn bekle! 😎"); return; }
+    const modal = document.getElementById('istekModal');
+    if (modal) modal.style.display = 'flex'; 
+}
+
+function modalKapat() {
+    const modal = document.getElementById('istekModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function formGonderildi() {
+    if (!ilkYuklenmePasGecildi) { ilkYuklenmePasGecildi = true; return; }
+    istekBeklemede = true;
+    modalKapat();
+    const sendBtn = document.querySelector('.send-btn');
+    let saniye = 30;
+    const sayac = setInterval(() => {
+        sendBtn.disabled = true;
+        sendBtn.innerText = `BEKLE (${saniye}s)`;
+        saniye--;
+        if (saniye < 0) {
+            clearInterval(sayac);
+            istekBeklemede = false;
+            sendBtn.disabled = false;
+            sendBtn.innerText = "🎤 İSTEK GÖNDER";
+        }
+    }, 1000);
+}
+
+// --- 🟢 CANLI ONLİNE TAKİP SİSTEMİ (Arka Planda Sürekli Çalışır) ---
+// Değişkenleri pencere bazlı (window) yaparak her yerden erişilebilir kılıyoruz kanka
+window.onlineSayacRef = firebase.database().ref('online_users');
+window.baglantiKontrolRef = firebase.database().ref('.info/connected');
+
+window.baglantiKontrolRef.on('value', (snapshot) => {
+    if (snapshot.val() === true) {
+        // Kullanıcı bağlandığında bir oturum oluştur
+        const sessionRef = window.onlineSayacRef.push(true);
+        // Sekmeyi kapattığında otomatik silinsin
+        sessionRef.onDisconnect().remove();
+    }
+});
+
+// Admin panelindeki sayacı anlık güncelleyen dinleyici
+window.onlineSayacRef.on('value', (snapshot) => {
+    const onlineSayisi = snapshot.numChildren() || 0;
+    const countElement = document.getElementById('online-count');
+    
+    if (countElement) {
+        countElement.innerText = `🟢 ${onlineSayisi} Kişi Çevrimiçi`;
+    }
+});
+
+
+window.onclick = function(event) {
+    const modal = document.getElementById('istekModal');
+    if (event.target == modal) modal.style.display = "none";
+}
+
+// --- ANA YÜKLEME SİSTEMİ ---
+window.onload = () => { 
+    database.ref('trendler').once('value').then((snapshot) => {
+        trendVerisi = snapshot.val() || {};
+        
+        // Hash / Arama Kontrolleri
+        const hash = window.location.hash; 
+        
+        if (hash) {
+            // 1. DURUM: LİNKLE GELİNDİYSE
+            const paylasilanSes = decodeURIComponent(hash.substring(1));
+            const araInput = document.getElementById('ara');
+            
+            if (araInput) araInput.value = paylasilanSes;
+
+            // ÖNEMLİ: yukle('trendler') yerine tüm arşivi tek liste yapıp filtreliyoruz
+            const tumSesler = Object.values(arsiv).flat();
+            suAnkiListe = tumSesler.filter(s => s.ad.toLowerCase().includes(paylasilanSes.toLowerCase()));
+            
+            // Eğer aranan ses bulunduysa başlığı değiştir ve sadece onu bas
+            const baslik = document.getElementById('baslik');
+            if(baslik) baslik.innerText = "PAYLAŞILAN SES 🔗";
+            
+            // yukle fonksiyonunu atlayıp direkt listeyi bastırıyoruz ki trendler ezmesin
+            listeGuncelle(); 
+
+            // Kaydırma ve Parlama Efekti
+            setTimeout(() => {
+                const kartlar = document.querySelectorAll('.sound-card');
+                let hedef;
+                kartlar.forEach(k => {
+                    const h3 = k.querySelector('h3');
+                    if(h3 && h3.innerText.toLowerCase().trim() === paylasilanSes.toLowerCase().trim()) hedef = k;
+                });
+                if (hedef) {
+                    hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    hedef.style.boxShadow = "0 0 30px #facc15"; 
+                    setTimeout(() => { if(hedef) hedef.style.boxShadow = "none"; }, 5000);
+                }
+            }, 500);
+
+        } else {
+            // 2. DURUM: NORMAL GİRİŞ (TRENDLERİ YÜKLE)
+            yukle('trendler');
+        }
+
+        uiGuncelle();
+        
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                const username = user.email.split('@')[0];
+                currentUser = username; 
+                basariylaGirisYapildi(username);
+                aktiflikTakibiBaslat(user); 
+            } else {
+                currentUser = null;
+                if (typeof aktiflikInterval !== 'undefined' && aktiflikInterval) clearInterval(aktiflikInterval);
+            }
+        });
+
+        if (typeof temaSec === "function") temaSec(localStorage.getItem('selectedTheme') || 'default');
+        if (typeof cerezKontrol === "function") cerezKontrol(); 
+    });
+};
+
+</script>
+</body>
+</html>
