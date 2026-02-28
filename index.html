@@ -180,9 +180,11 @@ body {
         flex-direction: column;
         position: relative;
         background-color: #0f172a !important;
+        
+        /* EKRAN DÖNMESİNİ ENGELLEYEN KOD */
         min-height: 100vh;
         max-height: 100vh;
-        overflow-y: auto; 
+        overflow-y: auto; /* Dikey kaydırma kalsın */
         margin: 0;
         padding: 0;
     }
@@ -195,30 +197,30 @@ body {
         border-right: none !important;
         padding: 5px !important;
         display: flex !important;
-        flex-direction: column !important; 
-        align-items: center; 
+        flex-direction: column !important; /* ALT ALTA */
+        align-items: center; /* ORTALA */
         gap: 6px !important;
         order: 1; 
         background-color: #0f172a;
     }
 
-    /* --- ARAMA KUTUSU MOBİL DÜZELTME (ID ARA OLARAK GÜNCELLENDİ) --- */
-    #ara { 
+    /* --- ARAMA KUTUSU MOBİL DÜZELTME (SADECE ID DÜZELTİLDİ) --- */
+    #ara {
         width: 90% !important; 
         padding: 10px !important;
         margin: 5px auto !important; 
-        font-size: 16px !important; 
+        font-size: 16px !important; /* Mobilde yazarken zoom yapmaması için */
         border-radius: 8px !important;
         border: 1px solid #38bdf8 !important;
         background-color: #1e293b !important;
         color: white !important;
         display: block !important;
-        order: 0; 
+        order: 0; /* Kategorilerin üstünde durması için */
     }
 
     /* KATEGORİLERİ KUTU YAP VE ORTALA */
     .cat-btn {
-        width: 90% !important; 
+        width: 90% !important; /* Ekranı kaplasın */
         padding: 12px 5px !important;
         font-size: 14px !important;
         text-align: center;
@@ -228,7 +230,7 @@ body {
         color: white !important;
         font-weight: bold;
         box-sizing: border-box;
-        margin: 0 auto; 
+        margin: 0 auto; /* ORTALAMA */
         display: block;
     }
     
@@ -250,14 +252,14 @@ body {
         background-color: #0f172a;
     }
 
-    /* --- Stats Panelini Sıkıştır --- */
+    /* --- Stats Panelini Sıkıştır (Uygulama İçin) --- */
     #stats-panel {
         display: flex !important;
-        flex-wrap: wrap !important; 
+        flex-wrap: wrap !important; /* Taşarsa alta geç */
         justify-content: center !important;
-        gap: 3px !important; 
+        gap: 3px !important; /* Araları kapat */
         padding: 2px !important;
-        font-size: 8px !important; 
+        font-size: 8px !important; /* Yazıları iyice küçült */
         width: 100% !important;
         box-sizing: border-box;
         background-color: #1e293b !important;
@@ -266,11 +268,12 @@ body {
     
     #stats-panel button {
         font-size: 8px !important;                
-        padding: 3px 5px !important; 
+        padding: 3px 5px !important; /* Padding'i azalt */
         white-space: nowrap !important;
-        flex: 0 1 auto !important; 
+        flex: 0 1 auto !important; /* Butonlar kendi boyutunda kalsın */
     }
     
+    /* İsim/Rank sığmıyorsa küçült */
     #user-name-display {
         font-size: 9px !important;
     }
@@ -294,14 +297,9 @@ body {
         background-color: #1e293b !important;
         border-radius: 10px;
     }
-
-    /* JS'NIN GİZLEME KOMUTUNUN CSS TARAFINDAN EZİLMESİNİ ENGELLER */
-    .card[style*="display: none"] {
-        display: none !important;
-    }
     
-    /* SES İSMİ (H4 OLARAK DÜZELTİLDİ) */
-    .card h4 {
+    /* SES İSMİ */
+    .card h3, .card h4 { /* Hem h3 hem h4'ü senin orijinal stilinle bıraktım */
         font-size: 10px !important;
         margin: 2px 0 !important;
         white-space: nowrap;
@@ -327,6 +325,11 @@ body {
         background-color: #38bdf8 !important;
         color: #0f172a !important;
         border-radius: 6px;
+    }
+
+    /* ARTIK ARAMA YAPINCA KARTLARIN GERÇEKTEN GİZLENMESİNİ SAĞLAR */
+    .card[style*="display: none"] {
+        display: none !important;
     }
 }
     </style>
