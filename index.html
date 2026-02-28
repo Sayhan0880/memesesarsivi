@@ -298,14 +298,22 @@ body {
         border-radius: 10px;
     }
     
-    /* SES İSMİ */
-    .card h3, .card h4 { /* Hem h3 hem h4'ü senin orijinal stilinle bıraktım */
-        font-size: 13px !important;
-        margin: 2px 0 !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: white;
+/* SES İSMİ - ALT SATIRA GEÇME AYARI */
+    .card h3, .card h4 {
+        font-size: 11px !important;                
+        margin: 0 !important;                
+        padding: 0 !important;                
+        line-height: 1.1 !important;                
+        
+        /* 2 SATIR İÇİN AYARLAR */
+        white-space: normal !important; /* Alt satıra geçmeyi açar */
+        word-wrap: break-word !important; 
+        overflow: hidden !important; /* Tasarımı bozmasın diye 2 satırdan fazlasını gizler */
+        text-overflow: clip !important; /* Ellipsis'i kaldırır */
+        
+        color: white;                
+        font-weight: 600;                
+        height: 24px !important; /* Maksimum 2 satır yükseklik */
     }
     
     .medal-css {
