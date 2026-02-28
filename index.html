@@ -180,11 +180,9 @@ body {
         flex-direction: column;
         position: relative;
         background-color: #0f172a !important;
-        
-        /* EKRAN DÖNMESİNİ ENGELLEYEN KOD */
         min-height: 100vh;
         max-height: 100vh;
-        overflow-y: auto; /* Dikey kaydırma kalsın */
+        overflow-y: auto; 
         margin: 0;
         padding: 0;
     }
@@ -197,30 +195,30 @@ body {
         border-right: none !important;
         padding: 5px !important;
         display: flex !important;
-        flex-direction: column !important; /* ALT ALTA */
-        align-items: center; /* ORTALA */
+        flex-direction: column !important; 
+        align-items: center; 
         gap: 6px !important;
         order: 1; 
         background-color: #0f172a;
     }
 
-    /* --- ARAMA KUTUSU MOBİL DÜZELTME --- */
-    #search-input {
+    /* --- ARAMA KUTUSU MOBİL DÜZELTME (ID ARA OLARAK GÜNCELLENDİ) --- */
+    #ara { 
         width: 90% !important; 
         padding: 10px !important;
         margin: 5px auto !important; 
-        font-size: 16px !important; /* Mobilde yazarken zoom yapmaması için */
+        font-size: 16px !important; 
         border-radius: 8px !important;
         border: 1px solid #38bdf8 !important;
         background-color: #1e293b !important;
         color: white !important;
         display: block !important;
-        order: 0; /* Kategorilerin üstünde durması için */
+        order: 0; 
     }
 
     /* KATEGORİLERİ KUTU YAP VE ORTALA */
     .cat-btn {
-        width: 90% !important; /* Ekranı kaplasın */
+        width: 90% !important; 
         padding: 12px 5px !important;
         font-size: 14px !important;
         text-align: center;
@@ -230,7 +228,7 @@ body {
         color: white !important;
         font-weight: bold;
         box-sizing: border-box;
-        margin: 0 auto; /* ORTALAMA */
+        margin: 0 auto; 
         display: block;
     }
     
@@ -252,14 +250,14 @@ body {
         background-color: #0f172a;
     }
 
-    /* --- Stats Panelini Sıkıştır (Uygulama İçin) --- */
+    /* --- Stats Panelini Sıkıştır --- */
     #stats-panel {
         display: flex !important;
-        flex-wrap: wrap !important; /* Taşarsa alta geç */
+        flex-wrap: wrap !important; 
         justify-content: center !important;
-        gap: 3px !important; /* Araları kapat */
+        gap: 3px !important; 
         padding: 2px !important;
-        font-size: 8px !important; /* Yazıları iyice küçült */
+        font-size: 8px !important; 
         width: 100% !important;
         box-sizing: border-box;
         background-color: #1e293b !important;
@@ -268,12 +266,11 @@ body {
     
     #stats-panel button {
         font-size: 8px !important;                
-        padding: 3px 5px !important; /* Padding'i azalt */
+        padding: 3px 5px !important; 
         white-space: nowrap !important;
-        flex: 0 1 auto !important; /* Butonlar kendi boyutunda kalsın */
+        flex: 0 1 auto !important; 
     }
     
-    /* İsim/Rank sığmıyorsa küçült */
     #user-name-display {
         font-size: 9px !important;
     }
@@ -297,9 +294,14 @@ body {
         background-color: #1e293b !important;
         border-radius: 10px;
     }
+
+    /* JS'NIN GİZLEME KOMUTUNUN CSS TARAFINDAN EZİLMESİNİ ENGELLER */
+    .card[style*="display: none"] {
+        display: none !important;
+    }
     
-    /* SES İSMİ */
-    .card h3 {
+    /* SES İSMİ (H4 OLARAK DÜZELTİLDİ) */
+    .card h4 {
         font-size: 10px !important;
         margin: 2px 0 !important;
         white-space: nowrap;
