@@ -1316,11 +1316,31 @@ function favoriToggle(id) {
 }
 
 function filtrele() {
-    let k = document.getElementById('ara').value.toLowerCase();
-    const kartlar = document.querySelectorAll('.card');
+    let input = document.getElementById('ara');
+    if (!input) return;
+    
+    let k = input.value.toLowerCase();
+    const kartlar = document.querySelectorAll('.card');                
+    
     kartlar.forEach(c => {
-        const eslesme = c.getAttribute('data-isim').includes(k);
-        c.style.display = eslesme ? 'block' : 'none';
+        // Data-isim attributunu oku
+        let isim = c.getAttribute('data-isim');
+        
+        // Eğer data-isim boşsa, h4 içindeki metni al ve ata
+        if (!isim) {
+            const h4 = c.querySelector('h4');
+            if (h4) {
+                isim = h4.innerText.toLowerCase();
+                c.setAttribute('data-isim', isim); // Bir daha hesaplamasın diye ekle
+            }
+        }
+        
+        // Karşılaştırma yap
+        if (isim && isim.includes(k)) {
+            c.style.display = 'block';
+        } else {
+            c.style.display = 'none';
+        }
     });
 }
 
