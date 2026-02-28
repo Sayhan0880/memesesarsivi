@@ -473,7 +473,7 @@ body {
         
         <div class="auth-input-group">
             <input type="text" id="auth-username" class="request-input" placeholder="Kullanıcı Adı" style="margin-bottom:5px;">
-            <input type="text" id="auth-password" class="request-input" autocomplete="new-password" placeholder="Şifre" style="margin-bottom:5px; -webkit-text-security: disc;">
+            <input type="password" id="auth-password" class="request-input" autocomplete="new-password" placeholder="Şifre" style="margin-bottom:5px;">
             <p id="password-rule" style="font-size: 10px; color: #fbbf24; margin: 5px 0;">* Şifre min. 6 karakter ve en az 1 rakam içermeli.</p>
             <p id="auth-error" class="auth-error-text"></p>
         </div>
@@ -1519,9 +1519,10 @@ const yasalMetinler = {
     gizlilik: `
         <h2 style="color:#38bdf8; margin-top:0;">🛡️ Gizlilik</h2>
         <p style="color:#94a3b8; font-size:13px; line-height:1.6;">
-            • Verilerin (XP, Favoriler) sadece senin cihazında (LocalStorage) saklanır.<br>
-            • Firebase üzerinde sadece seslerin toplam tıklanma sayıları anonim olarak tutulur.<br>
-            • Üçüncü şahıslara veri satışı veya takibi yapılmaz.
+          • Hesabınla giriş yaptığında XP ve Favorilerin Firebase üzerinde sana özel saklanır.<br>
+          • Cihazlar arası geçişte verilerin kaybolmaz.<br>
+          • Seslerin toplam tıklanma sayıları anonim olarak tutulur.<br>
+          • Üçüncü şahıslara veri satışı veya takibi kesinlikle yapılmaz.
         </p>
     `,
     kullanim: `
