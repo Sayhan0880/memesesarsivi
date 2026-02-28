@@ -473,7 +473,7 @@ body {
         
         <div class="auth-input-group">
             <input type="text" id="auth-username" class="request-input" placeholder="Kullanıcı Adı" style="margin-bottom:5px;">
-            <input type="text" id="auth-password" class="request-input" placeholder="Şifre" style="margin-bottom:5px;" readonly onfocus="this.type='password'; this.removeAttribute('readonly');">
+            <input type="password" id="hizli-baglan" class="request-input" name="user_token" placeholder="Şifre" style="margin-bottom:5px;" autocomplete="off">
             <p id="password-rule" style="font-size: 10px; color: #fbbf24; margin: 5px 0;">* Şifre min. 6 karakter ve en az 1 rakam içermeli.</p>
             <p id="auth-error" class="auth-error-text"></p>
         </div>
