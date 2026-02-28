@@ -340,6 +340,13 @@ body {
         display: none !important;
     }
 }
+
+/* --- GOOGLE ŞİFRE UYARISINI ENGELLER --- */
+#auth-password {                
+    -webkit-text-security: disc !important; /* Chrome ve Safari için */
+    text-security: disc !important; /* Diğer tarayıcılar için */
+}
+
     </style>
 </head>
 <body>
@@ -466,7 +473,7 @@ body {
         
         <div class="auth-input-group">
             <input type="text" id="auth-username" class="request-input" placeholder="Kullanıcı Adı" style="margin-bottom:5px;">
-            <input type="password" id="auth-password" class="request-input" autocomplete="current-password" name="r_pass_123" placeholder="Şifre" style="margin-bottom:5px;">
+            <input type="text" id="auth-password" class="request-input" autocomplete="new-password" placeholder="Şifre" style="margin-bottom:5px; -webkit-text-security: disc;">
             <p id="password-rule" style="font-size: 10px; color: #fbbf24; margin: 5px 0;">* Şifre min. 6 karakter ve en az 1 rakam içermeli.</p>
             <p id="auth-error" class="auth-error-text"></p>
         </div>
