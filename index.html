@@ -1625,7 +1625,7 @@ function validatePassword(pass) {
 // 3. ANA İŞLEM (Gerçek Firebase Bağlantısı)
 async function handleAuthSubmit() {
     const user = document.getElementById('auth-username').value.trim();
-    const pass = document.getElementById('auth-password').value;
+    const pass = document.getElementById('hizli-baglan').value; // ID'yi eşitledik
     const errorArea = document.getElementById('auth-error');
     
     if (errorArea) errorArea.style.display = "none";
